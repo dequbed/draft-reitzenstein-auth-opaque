@@ -24,16 +24,17 @@ author:
     email: me@dequbed.space
 
 normative:
-  RFC2119:
-  RFC4422:
   RFC5801:
+  RFC5234:
+  RFC3629:
+  RFC9266:
 
-  I-D.irtf-cfrg-opaque-latest:
+  I-D.irtf-cfrg-opaque:
     title: The OPAQUE Asymmetric PAKE Protocol
     target: https://github.com/cfrg/draft-irtf-cfrg-opaque
 
 informative:
-
+  RFC5802:
 
 --- abstract
 
@@ -54,7 +55,7 @@ When used in combination with TLS or an equivalent security layer these mechanis
 TODO Introduction
 This specification describes a family of authentication mechanisms called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.
 
-OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" [RFC5801]. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.
+OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" {{RFC5801}}. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.
 
 The OPAQUE algorithm provides the following features which this mechanism makes use of:
 * The authentication information stored in an authentication database on the server is not sufficient to impersonate the client. It is additionally salted and bound to a private key of the server, making pre-stored dictionary attack impossible.
@@ -65,12 +66,12 @@ The OPAQUE algorithm provides the following features which this mechanism makes 
 
 # OPAQUE Algorithm Overview
 
-The Authenticated Key Exchange defined by OPAQUE consists of three messages — KE1, KE2 and KE3 — send by the client (KE1, KE3) and server (KE2) respectively. A client knows the outcome of the authentication after receiving KE2, the server after receiving KE3. 
+The Authenticated Key Exchange defined by OPAQUE consists of three messages — KE1, KE2 and KE3 — send by the client (KE1, KE3) and server (KE2) respectively. A client knows the outcome of the authentication after receiving KE2, the server after receiving KE3.
 
-The following is a description of a full SASL OPAQUE authentication exchange. Nothing in OPAQUE prevents sending the first client response with the SASL authentication request as defined by an application protocol ("initial client response"). See [RFC4422] for more details.
+The following is a description of a full SASL OPAQUE authentication exchange. Nothing in OPAQUE prevents sending the first client response with the SASL authentication request as defined by an application protocol ("initial client response"). See {{RFC4422}} for more details.
 
-The OPAQUE client starts by being in posession of an username and password. It uses the password to generate a KE1 structure as per {{!OPAQUE=I-D.irtf-cfrg-opaque}}, and sends it and the username to the server.
-The server retrieves the corresponding authentication information, i.e. registration record, OPRF seed, server private key, and the key-stretching function (KSF) parameters used at registration. It uses the first three to generate a KE2 structure as per {{!OPAQUE=I-D.irtf-cfrg-opaque}} and sends that, channel binding data (if any) and the KSF parameters to the client. 
+The OPAQUE client starts by being in posession of an username and password. It uses the password to generate a KE1 structure as per OPAQUE {{I-D.irtf-cfrg-opaque}}, and sends it and the username to the server.
+The server retrieves the corresponding authentication information, i.e. registration record, OPRF seed, server private key, and the key-stretching function (KSF) parameters used at registration. It uses the first three to generate a KE2 structure as per OPAQUE {{I-D.irtf-cfrg-opaque}} and sends that, channel binding data (if any) and the KSF parameters to the client.
 
 The client authenticates the server using KE2 and the KSF parameters, also showing the integrity of the channel binding data in the process, and generates a final KE3 it can return to the server.
 
@@ -107,19 +108,19 @@ To finalize the authentication a client sends a "client-final-message" containin
 
 ## OPAQUE Attributes
 
-This section details all attributes permissible in messages, their use and their value format. All Attributes a single US-ASCII letters and case-sensitive. The selection of letters used for attributes is based on {{!SCRAM=RFC5802}} to make it easier to adapt extensions defined for SCRAM to this mechanism.
+This section details all attributes permissible in messages, their use and their value format. All Attributes a single US-ASCII letters and case-sensitive. The selection of letters used for attributes is based on SCRAM {{RFC5802}} to make it easier to adapt extensions defined for SCRAM to this mechanism.
 
 Note that similar to SCRAM the order of attributes is fixed for all messages, except for extension attributes which are limited to designated positions but may appear in any order.
 
-- a: This is an optional attribute and is part of the {{!GS2=RFC5801}} bridge between GSS-API and SASL. Its specification and usage is the same as defined in {{SCRAM, Section 5.1}}.
+- a: This is an optional attribute and is part of the GS2 {{RFC5801}} bridge between GSS-API and SASL. Its specification and usage is the same as defined in {{RFC5802, Section 5.1}}.
 
-- n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" {{!RFC4422}}). Its specification and usage is the same as defined in {{SCRAM, Section 5.1}}.
+- n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" {{!RFC4422}}). Its specification and usage is the same as defined in {{RFC5802, Section 5.1}}.
 
 - m: This attribute is reserved for future extensibility. In this version of OPAQUE its presence in a client or server message MUST cause authentication failure when the attribute is parsed by the other end.
 
 - r: This attribute specifies a base64-encoded serialization of the KE1 message as specified by {{!OPAQUE=I-D.irtf-cfrg-opaque}}.
 
-- c: This REQUIRED attribute specifies the base64-encoded GS2 header and channel binding data. Its specification is the same as defined in {{SCRAM, Section 5.1}}, however it is sent by the server to the client instead of the other way around as in SCRAM.
+- c: This REQUIRED attribute specifies the base64-encoded GS2 header and channel binding data. Its specification is the same as defined in {{RFC5802, Section 5.1}}, however it is sent by the server to the client instead of the other way around as in SCRAM.
 
 - i: This attribute specifies base64-encoded parameters for the KSF to be used. The format of the parameters is specific to the KSF in use.
 
@@ -149,7 +150,7 @@ This section describes the required information for SASL mechanisms as laid out 
 
 OPAQUE supports binding the authentication to an underlying secure transport. Support for channel binding is optional, therefore the usage of channel binding is negotiable.
 
-The negotiation of channel binding is performed as defined in {{SCRAM, Section 6}} with the following differences:
+The negotiation of channel binding is performed as defined in {{RFC5802, Section 6}} with the following differences:
 
 - The non-PLUS and PLUS variants of the mechanism are instead named OPAQUE-&lt;variant&gt; and OPAQUE-&lt;variant&gt;-PLUS respectively.
 
@@ -159,7 +160,7 @@ The negotiation of channel binding is performed as defined in {{SCRAM, Section 6
 
 'tls-exporter' is the default channel binding type for any application that do not specify one.
 
-Servers MUST implement the 'tls-exporter' {{RFC9266}} channel binding type if they implement any channel binding and use TLS. Clients SHOULD implement the 'tls-exporter' {{RFC9266}} channel binding type if they implement any and use TLS. 
+Servers MUST implement the 'tls-exporter' {{RFC9266}} channel binding type if they implement any channel binding and use TLS. Clients SHOULD implement the 'tls-exporter' {{RFC9266}} channel binding type if they implement any and use TLS.
 
 Servers MUST use the channel binding type indicated by the client, or fail authentication if they do not support it.
 
@@ -167,7 +168,7 @@ Servers MUST use the channel binding type indicated by the client, or fail authe
 
 The following syntax specification is written in Augmented Backus-Naur Form (ABNF) notation as specified in {{RFC5234}}. The non-terminals "UTF8-2", "UTF8-3" and "UTF8-4" are defined in {{RFC3629}}.
 
-The syntax is based in large parts on {{SCRAM=RFC5802, Section 7}}, which may be referenced for clarification. If this specification and {{RFC5802}} are in conflict, this speification takes priority. 
+The syntax is based in large parts on {{RFC5802, Section 7}}, which may be referenced for clarification. If this specification and {{RFC5802}} are in conflict, this speification takes priority.
 
 Used definitions from {{RFC5802}} are reproduced here for convenience:
 
@@ -218,7 +219,7 @@ Used definitions from {{RFC5802}} are reproduced here for convenience:
                       ;; See RFC 5056, Section 7.
                       ;; E.g., "tls-server-end-point" or
                       ;; "tls-unique".
-   
+
     gs2-cbind-flag  = ("p=" cb-name) / "n" / "y"
                       ;; "n" -> client doesn't support channel binding.
                       ;; "y" -> client does support channel binding
@@ -231,12 +232,12 @@ Used definitions from {{RFC5802}} are reproduced here for convenience:
 
     username        = "n=" saslname
                       ;; Usernames are prepared using SASLprep.
- 
+
     reserved-mext  = "m=" 1*(value-char)
                       ;; Reserved for signaling mandatory extensions.
                       ;; The exact syntax will be defined in
                       ;; the future.
- 
+
     channel-binding = "c=" base64
                       ;; base64 encoding of cbind-input.
 
@@ -249,14 +250,14 @@ Used definitions from {{RFC5802}} are reproduced here for convenience:
 
 The following definitions are specific to OPAQUE:
 
-    client-first-message-bare = 
-                [reserved-mext ","] username "," auth-request 
+    client-first-message-bare =
+                [reserved-mext ","] username "," auth-request
                 ["," extensions]
 
     client-first-message = gs2-header client-first-message-bare
 
-    server-message = 
-                [reserved-mext ","] channel-binding "," ksf-params "," 
+    server-message =
+                [reserved-mext ","] channel-binding "," ksf-params ","
                 auth-response ["," extensions]
 
     client-final-message = "p=" base64
@@ -268,7 +269,7 @@ TODO Security
 
 # IANA Considerations
 
-The IANA is requested to add the following family of SASL mechanisms to the SASL Mechanism registry established by [RFC4422]:
+The IANA is requested to add the following family of SASL mechanisms to the SASL Mechanism registry established by {{RFC4422}}:
 
 To: iana@iana.org
 Subject: Registration of new SASL family OPAQUE
