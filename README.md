@@ -1,12 +1,30 @@
-# Internet-Draft Template Repository
+# A SASL and GSS-API Mechanism family using the asymmetric password-authenticated key agreement OPAQUE
 
-Use this repository as a template if you want to start working on
-[IETF](https://www.ietf.org/) documents.
+This is the working area for the individual Internet-Draft, "A SASL and GSS-API Mechanism family using the asymmetric password-authenticated key agreement OPAQUE".
 
-[Read the
-instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/TEMPLATE.md)
-for more information.
+* [Editor's Copy](https://dequbed.github.io/draft-reitzenstein-auth-opaque/#go.draft-reitzenstein-kitten-opaque.html)
+* [Datatracker Page](https://datatracker.ietf.org/doc/draft-reitzenstein-kitten-opaque)
+* [Individual Draft](https://datatracker.ietf.org/doc/html/draft-reitzenstein-kitten-opaque)
+* [Compare Editor's Copy to Individual Draft](https://dequbed.github.io/draft-reitzenstein-auth-opaque/#go.draft-reitzenstein-kitten-opaque.diff)
 
-Once you have created your own repository, start work by renaming the
-`draft-todo-yourname-protocol.md` file
-[here](../../edit/main/draft-todo-yourname-protocol.md).
+
+## Contributing
+
+See the
+[guidelines for contributions](https://github.com/dequbed/draft-reitzenstein-auth-opaque/blob/main/CONTRIBUTING.md).
+
+Contributions can be made by creating pull requests.
+The GitHub interface supports creating pull requests using the Edit (✏) button.
+
+
+## Command Line Usage
+
+Formatted text and HTML versions of the draft can be built using `make`.
+
+```sh
+$ make
+```
+
+Command line usage requires that you have the necessary software installed.  See
+[the instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/SETUP.md).
+
