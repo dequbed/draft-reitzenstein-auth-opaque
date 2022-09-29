@@ -1,3 +1,4 @@
+---
 title: "A SASL and GSS-API Mechanism family using the asymmetric password-authenticated key agreement OPAQUE"
 abbrev: "OPAQUE Authentication"
 docname: draft-reitzenstein-kitten-opaque-latest
