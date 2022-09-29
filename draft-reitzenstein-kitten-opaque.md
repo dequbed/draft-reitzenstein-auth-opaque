@@ -9,9 +9,9 @@ keyword: Internet-Draft
 
 stand_alone: yes
 
-submissiontype: IETF
+submissiontype: independent
 number:
-consensus: true
+consensus: false
 v: 3
 area: AREA
 workgroup: WG Working Group
