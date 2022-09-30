@@ -25,6 +25,7 @@ author:
 
 normative:
   RFC5801:
+  RFC5802:
   RFC5234:
   RFC3629:
   RFC9266:
@@ -34,7 +35,6 @@ normative:
     target: https://github.com/cfrg/draft-irtf-cfrg-opaque
 
 informative:
-  RFC5802:
 
 --- abstract
 
