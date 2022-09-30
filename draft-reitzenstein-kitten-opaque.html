@@ -1041,7 +1041,7 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">von Reitzenstein Čerpnjak</td>
-<td class="center">Expires 2 April 2023</td>
+<td class="center">Expires 3 April 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1054,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-reitzenstein-kitten-opaque-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-09-29" class="published">29 September 2022</time>
+<time datetime="2022-09-30" class="published">30 September 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-04-02">2 April 2023</time></dd>
+<dd class="expires"><time datetime="2023-04-03">3 April 2023</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1105,7 +1105,7 @@ When used in combination with TLS or an equivalent security layer these mechanis
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 2 April 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 3 April 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1208,15 +1208,15 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
       <h2 id="name-introduction">
 <a href="#section-2" class="section-number selfRef">2. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-2-1">TODO Introduction
-This specification describes a family of authentication mechanisms called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.<a href="#section-2-1" class="pilcrow">¶</a></p>
-<p id="section-2-2">OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" <span>[<a href="#RFC5801" class="xref">RFC5801</a>]</span>. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.<a href="#section-2-2" class="pilcrow">¶</a></p>
-<p id="section-2-3">The OPAQUE algorithm provides the following features which this mechanism makes use of:
+<p id="section-2-1">TODO Introduction<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">This specification describes a family of authentication mechanisms called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" <span>[<a href="#RFC5801" class="xref">RFC5801</a>]</span>. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-4">The OPAQUE algorithm provides the following features which this mechanism makes use of:
 * The authentication information stored in an authentication database on the server is not sufficient to impersonate the client. It is additionally salted and bound to a private key of the server, making pre-stored dictionary attack impossible.
 * Successfull authentication does not grant the server enough information to impersonate the client.
 * Mutual authentication is implicit and required. A successfull authentication always strongly authenticates both sides of the exchange.
 * A successfull authentication provides both parties with an emphemeral shared secret. This secret has high entropy and can be used to establish a trusted encrypted channel without deriving trust from a 3rd party.
-* A successfull authentication additionally provides the client with a constant secret. This secret is only known to the client and the same for every authentication. It can be used to e.g. store encrypted data on the server without having to manage keys locally.<a href="#section-2-3" class="pilcrow">¶</a></p>
+* A successfull authentication additionally provides the client with a constant secret. This secret is only known to the client and the same for every authentication. It can be used to e.g. store encrypted data on the server without having to manage keys locally.<a href="#section-2-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="opaque-algorithm-overview">
@@ -1229,7 +1229,10 @@ This specification describes a family of authentication mechanisms called OPAQUE
 <p id="section-3-3">The OPAQUE client starts by being in posession of an username and password. It uses the password to generate a KE1 structure as per OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="xref">I-D.irtf-cfrg-opaque</a>]</span>, and sends it and the username to the server.
 The server retrieves the corresponding authentication information, i.e. registration record, OPRF seed, server private key, and the key-stretching function (KSF) parameters used at registration. It uses the first three to generate a KE2 structure as per OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="xref">I-D.irtf-cfrg-opaque</a>]</span> and sends that, channel binding data (if any) and the KSF parameters to the client.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <p id="section-3-4">The client authenticates the server using KE2 and the KSF parameters, also showing the integrity of the channel binding data in the process, and generates a final KE3 it can return to the server.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-5">TODO: Specify the exact math from OPAQUE and how it protects the channel binding data. TL;DR both KE2 and KE3 contain a MAC over data processed in the authentication exchange, those should protect cb-data.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.<a href="#section-3-6" class="pilcrow">¶</a></p>
+<p id="section-3-7">TODO: Would it be sensible to send the values contained in KE1/2/3 directly and change up the generation of the KE2 and KE3 MACs to be over the line-encoding like it is in SCRAM?<a href="#section-3-7" class="pilcrow">¶</a></p>
+<p id="section-3-8">TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)<a href="#section-3-8" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="opaque-mechanism-names">
