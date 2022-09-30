@@ -53,6 +53,7 @@ When used in combination with TLS or an equivalent security layer these mechanis
 # Introduction
 
 TODO Introduction
+
 This specification describes a family of authentication mechanisms called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.
 
 OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" {{RFC5801}}. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.
@@ -75,7 +76,13 @@ The server retrieves the corresponding authentication information, i.e. registra
 
 The client authenticates the server using KE2 and the KSF parameters, also showing the integrity of the channel binding data in the process, and generates a final KE3 it can return to the server.
 
+TODO: Specify the exact math from OPAQUE and how it protects the channel binding data. TL;DR both KE2 and KE3 contain a MAC over data processed in the authentication exchange, those should protect cb-data.
+
 Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.
+
+TODO: Would it be sensible to send the values contained in KE1/2/3 directly and change up the generation of the KE2 and KE3 MACs to be over the line-encoding like it is in SCRAM?
+
+TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)
 
 # OPAQUE Mechanism Names
 
