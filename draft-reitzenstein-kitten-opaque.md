@@ -76,11 +76,27 @@ The server retrieves the corresponding authentication information, i.e. registra
 
 The client authenticates the server using KE2 and the KSF parameters, also showing the integrity of the channel binding data in the process, and generates a final KE3 it can return to the server.
 
-TODO: Specify the exact math from OPAQUE and how it protects the channel binding data. TL;DR both KE2 and KE3 contain a MAC over data processed in the authentication exchange, those should protect cb-data.
+The three messages KE1, KE2 and KE3 are generated using the following functions specified in OPAQUE {{I-D.irtf-cfrg-opaque}}:
+
+    KE1 := ClientInit(password)
+
+    KE2 := ServerInit(server_identity, server_private_key, server_public_key, record, credential_identifier, oprf_seed, KE1, client_identity)
+
+    KE3 := ClientFinish(client_identity, server_identity, KE2)
+
+The values of `client_identity` and `server_identity` are set to:
+
+    client_identity := client-first-message + "," + client_public_key
+
+    server_identity := server-message-bare + "," + server_public_key
+
+With the values and encodings of the remaining parameters per the OPAQUE specification, and `+` indicating concatenation.
 
 Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.
 
-TODO: Would it be sensible to send the values contained in KE1/2/3 directly and change up the generation of the KE2 and KE3 MACs to be over the line-encoding like it is in SCRAM?
+TODO: We should probably set context to prevent cross-protocol attacks.
+
+TODO: With the current design the KSF parameters can not be MAC-verified until after they have been used. This is bad.
 
 TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)
 
@@ -99,29 +115,29 @@ The PLUS suffix is only used when the authenticating parties support channel bin
 First, the client sends the "client-first-message" containing:
 
 - A GS2 header consisting of a flag indicating channel binding support and usage, and an optional SASL authorization identity.
-- The OPRF credential request (contained in ke1)
-- A client nonce and ephemeral public key for the AKE protocol (contained in ke1)
+- The authentication ID (AuthID) of the user.
+- OPAQUE KE1, containing the OPRF credential request, a nonce, and an ephemeral public key.
 
 In response the server sends the "server-message" containing:
 
-- The OPRF credential response (contained in ke2)
-- A server nonce and ephemeral public key used by the AKE protocol (contained in ke2)
-- A MAC proving the integrity of the exchange so far and cryptographically authenticating the server to the client (contained in ke2)
+- An encoding of requested channel binding data
 - Parameters for the KSF that needs to be used by the client
+- OPAQUE KE2, containting the OPRF credential response, a nonce, and an ephemeral public key.
+- A MAC proving the integrity of the exchange so far and cryptographically authenticating the server to the client (also contained in KE2)
 
-The client the recovers a long term private key and client-only export key from the OPRF response using the user-provided password.
+The client then recovers a long term private key and client-only export key from the OPRF response using the defined KSF with the user-provided password and parameters sent by the server.
 
-To finalize the authentication a client sends a "client-final-message" containing itself a MAC over the exchange, thus cryptographically authenticating the client to the server.
+To finalize the authentication a client sends a "client-final-message" containing itself a MAC over the exchange (in KE3), thus cryptographically authenticating the client to the server.
 
 ## OPAQUE Attributes
 
 This section details all attributes permissible in messages, their use and their value format. All Attributes a single US-ASCII letters and case-sensitive. The selection of letters used for attributes is based on SCRAM {{RFC5802}} to make it easier to adapt extensions defined for SCRAM to this mechanism.
 
-Note that similar to SCRAM the order of attributes is fixed for all messages, except for extension attributes which are limited to designated positions but may appear in any order.
+Note that similar to SCRAM the order of attributes is fixed for all messages, except for extension attributes which are limited to designated positions but may appear in any order. Implementations MUST NOT assume a specific ordering of extensions.
 
 - a: This is an optional attribute and is part of the GS2 {{RFC5801}} bridge between GSS-API and SASL. Its specification and usage is the same as defined in {{RFC5802, Section 5.1}}.
 
-- n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" {{!RFC4422}}). Its specification and usage is the same as defined in {{RFC5802, Section 5.1}}.
+- n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" {{!RFC4422}}). Its encoding, preparation, and usage is the same as defined in {{RFC5802, Section 5.1}}.
 
 - m: This attribute is reserved for future extensibility. In this version of OPAQUE its presence in a client or server message MUST cause authentication failure when the attribute is parsed by the other end.
 
@@ -263,9 +279,13 @@ The following definitions are specific to OPAQUE:
 
     client-first-message = gs2-header client-first-message-bare
 
-    server-message =
+    validator = "v=" base64
+
+    server-message-bare =
                 [reserved-mext ","] channel-binding "," ksf-params ","
-                auth-response ["," extensions]
+                credentials-response ["," extensions]
+
+    server-message = server-message-bare "," validator
 
     client-final-message = "p=" base64
 
