@@ -58,11 +58,12 @@ This specification describes a family of authentication mechanisms called OPAQUE
 OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" {{RFC5801}}. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.
 
 The OPAQUE algorithm provides the following features which this mechanism makes use of:
-* The authentication information stored in an authentication database on the server is not sufficient to impersonate the client. It is additionally salted and bound to a private key of the server, making pre-stored dictionary attack impossible.
-* Successfull authentication does not grant the server enough information to impersonate the client.
-* Mutual authentication is implicit and required. A successfull authentication always strongly authenticates both sides of the exchange.
-* A successfull authentication provides both parties with an emphemeral shared secret. This secret has high entropy and can be used to establish a trusted encrypted channel without deriving trust from a 3rd party.
-* A successfull authentication additionally provides the client with a constant secret. This secret is only known to the client and the same for every authentication. It can be used to e.g. store encrypted data on the server without having to manage keys locally.
+
+- The authentication information stored in an authentication database on the server is not sufficient to impersonate the client. It is additionally salted and bound to a private key of the server, making pre-stored dictionary attack impossible.
+- Successfull authentication does not grant the server enough information to impersonate the client.
+- Mutual authentication is implicit and required. A successfull authentication always strongly authenticates both sides of the exchange.
+- A successfull authentication provides both parties with an emphemeral shared secret. This secret has high entropy and can be used to establish a trusted encrypted channel without deriving trust from a 3rd party.
+- A successfull authentication additionally provides the client with a constant secret. This secret is only known to the client and the same for every authentication. It can be used to e.g. store encrypted data on the server without having to manage keys locally.
 
 # OPAQUE Algorithm Overview
 
@@ -305,18 +306,7 @@ The cryptographic security of this mechanism is not increased over the one provi
 
 # IANA Considerations
 
-The IANA is requested to add the following family of SASL mechanisms to the SASL Mechanism registry established by {{RFC4422}}:
-
-To: iana@iana.org
-Subject: Registration of new SASL family OPAQUE
-
-SASL mechanism name (or prefix for the family): OPAQUE-
-Security Considerations: See this document
-Published Specification: See this document
-For futher information: Contact the authors of this document.
-Owner/Change controller: the IETF
-Note: None
-
+A future revision of this document will request a new registry for the OPAQUE family of SASL mechanism, outlining all required details on the primitives used by the 'OPAQUE-A255SHA' variant.
 
 --- back
 
