@@ -14,13 +14,22 @@ Expires: 9 April 2023
 
 Abstract
 
-   TODO reasoning
-
    This specification describes a family of Simple Authentication and
    Security Layer (SASL, RFC4422) authentication mechanisms based on the
    OPAQUE asymmetric password-authenticated key agreement (PAKE)
-   algorithm.  When used in combination with TLS or an equivalent
-   security layer these mechanisms allow for secure channel binding.
+   algorithm.
+
+   They offer two distinct advantages over the SCRAM family of
+   mechanisms.  The underlying OPAQUE algorithm provides the ability for
+   clients to register without the servers getting access to the clear
+   text password of an user, preventing password exfiltration at
+   registration.  Secondly a successful authentication produces a long-
+   term secret key only known to the client that can be used to access
+   encrypted server-side data without needing to share keys between
+   clients via a side-band mechanism.
+
+   When used in combination with TLS or an equivalent security layer
+   these mechanisms allow for secure channel binding.
 
 Discussion Venues
 
@@ -73,10 +82,12 @@ Table of Contents
      5.2.  SASL Mechanism Requirements
    6.  Channel Binding
      6.1.  Default Channel Binding
-   7.  Formal Syntax
-   8.  Security Considerations
-   9.  IANA Considerations
-   10. Normative References
+   7.  OPAQUE-A255SHA(-PLUS)
+   8.  Formal Syntax
+   9.  Security Considerations
+   10. Open Issues
+   11. IANA Considerations
+   12. Normative References
    Acknowledgments
    Author's Address
 
@@ -89,8 +100,6 @@ Table of Contents
    capitals, as shown here.
 
 2.  Introduction
-
-   TODO Introduction
 
    This specification describes a family of authentication mechanisms
    called OPAQUE, based on the asymmetric PAKE of the same name.  The
@@ -169,15 +178,6 @@ KE3 := ClientFinish(client_identity, server_identity, KE2)
    exchange including integrity of the channel binding data it sent
    previously, and extract a session key that strongly authenticates the
    client to the server.
-
-   TODO: We should probably set context to prevent cross-protocol
-   attacks.
-
-   TODO: With the current design the KSF parameters can not be MAC-
-   verified until after they have been used.  This is bad.
-
-   TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS),
-   using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)
 
 4.  OPAQUE Mechanism Names
 
@@ -333,7 +333,12 @@ KE3 := ClientFinish(client_identity, server_identity, KE2)
    Servers MUST use the channel binding type indicated by the client, or
    fail authentication if they do not support it.
 
-7.  Formal Syntax
+7.  OPAQUE-A255SHA(-PLUS)
+
+   TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS),
+   using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)
+
+8.  Formal Syntax
 
    The following syntax specification is written in Augmented Backus-
    Naur Form (ABNF) notation as specified in [RFC5234].  The non-
@@ -438,11 +443,35 @@ KE3 := ClientFinish(client_identity, server_identity, KE2)
 
    client-final-message = "p=" base64
 
-8.  Security Considerations
+9.  Security Considerations
 
-   TODO Security
+   The KSF parameters and channel bindings aren't authenticated before
+   KSF usage, allowing a DoS of a client by an malicious actor posing as
+   the server.
 
-9.  IANA Considerations
+   If not used with a secure channel providing confidentiality this
+   mechanism leaks the authid and authzid of an authenticating user to
+   any passive observer.
+
+   The cryptographic security of this mechanism is not increased over
+   the one provided by the underlying OPAQUE algorithm, so all security
+   considerations applying to that specification also apply to this one.
+
+10.  Open Issues
+
+   *  OPAQUE allows for a static context to be bound into generated keys
+      to prevent cross-protocol and downgrade attacks.  We should
+      probably set that to the mechanism name (e.g.  'OPAQUE-A255SHA')
+
+   *  With the current design the KSF parameters can not be MAC-verified
+      until after they have been used.  This is bad.  The only other
+      option is using the ephemeral keypair to generate a MAC key and
+      use that.  This may impact security.
+
+   *  This mechanism should be extended to also become a GSS-API
+      mechanism like SCRAM is.
+
+11.  IANA Considerations
 
    The IANA is requested to add the following family of SASL mechanisms
    to the SASL Mechanism registry established by [RFC4422]:
@@ -454,12 +483,7 @@ KE3 := ClientFinish(client_identity, server_identity, KE2)
    document For futher information: Contact the authors of this
    document.  Owner/Change controller: the IETF Note: None
 
-   IANA is further requested to assign an OID for this GSS mechanism in
-   the SMI numbers registry, with the prefix of
-   iso.org.dod.internet.security.mechanisms (1.3.6.1.5.5) and to
-   reference this specification in the registry.
-
-10.  Normative References
+12.  Normative References
 
    [I-D.irtf-cfrg-opaque]
               "The OPAQUE Asymmetric PAKE Protocol", n.d.,
@@ -512,7 +536,11 @@ KE3 := ClientFinish(client_identity, server_identity, KE2)
 
 Acknowledgments
 
-   TODO acknowledge.
+   Thank you to Daniel Bourdrez, Hugo Krawczyk, Kevin Lewi, and C.  A.
+   Wood for their work on the OPAQUE PAKE that this mechanism is based
+   on.  Thank you to Abhijit Menon-Sen, Alexey Melnikov, Nicolas
+   Williams, and Chris Newman for their work on the SCRAM RFC, most of
+   which this draft oh so blatanly steals for its own gain.
 
 Author's Address
 
