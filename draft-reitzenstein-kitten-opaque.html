@@ -11,11 +11,11 @@
        This specification describes a family of Simple Authentication and Security Layer (SASL, RFC4422) authentication mechanisms based on the OPAQUE asymmetric password-authenticated key agreement (PAKE) algorithm.
 When used in combination with TLS or an equivalent security layer these mechanisms allow for secure channel binding. 
     " name="description">
-<meta content="xml2rfc 3.14.2" name="generator">
+<meta content="xml2rfc 3.15.0" name="generator">
 <meta content="Internet-Draft" name="keyword">
 <meta content="draft-reitzenstein-kitten-opaque-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.14.2
+  xml2rfc 3.15.0
     Python 3.10.5
     appdirs 1.4.4
     ConfigArgParse 1.5.3
@@ -1032,16 +1032,16 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 </style>
 
 </head>
-<body>
+<body class="xml2rfc">
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">OPAQUE Authentication</td>
-<td class="right">September 2022</td>
+<td class="right">October 2022</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">von Reitzenstein Čerpnjak</td>
-<td class="center">Expires 3 April 2023</td>
+<td class="center">Expires 9 April 2023</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1054,12 +1054,12 @@ svg :is([stroke="fill"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-reitzenstein-kitten-opaque-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2022-09-30" class="published">30 September 2022</time>
+<time datetime="2022-10-06" class="published">6 October 2022</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2023-04-03">3 April 2023</time></dd>
+<dd class="expires"><time datetime="2023-04-09">9 April 2023</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1105,7 +1105,7 @@ When used in combination with TLS or an equivalent security layer these mechanis
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 3 April 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 9 April 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1132,53 +1132,53 @@ When used in combination with TLS or an equivalent security layer these mechanis
         </h2>
 <nav class="toc"><ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
-            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="xref">1</a>.  <a href="#name-conventions-and-definitions" class="xref">Conventions and Definitions</a></p>
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
-            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="xref">2</a>.  <a href="#name-introduction" class="xref">Introduction</a></p>
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="xref">3</a>.  <a href="#name-opaque-algorithm-overview" class="xref">OPAQUE Algorithm Overview</a></p>
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-opaque-algorithm-overview" class="internal xref">OPAQUE Algorithm Overview</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="xref">4</a>.  <a href="#name-opaque-mechanism-names" class="xref">OPAQUE Mechanism Names</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-opaque-mechanism-names" class="internal xref">OPAQUE Mechanism Names</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="xref">5</a>.  <a href="#name-opaque-authentication-excha" class="xref">OPAQUE Authentication Exchange</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-opaque-authentication-excha" class="internal xref">OPAQUE Authentication Exchange</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="xref">5.1</a>.  <a href="#name-opaque-attributes" class="xref">OPAQUE Attributes</a></p>
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-opaque-attributes" class="internal xref">OPAQUE Attributes</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="xref">5.2</a>.  <a href="#name-sasl-mechanism-requirements" class="xref">SASL Mechanism Requirements</a></p>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-sasl-mechanism-requirements" class="internal xref">SASL Mechanism Requirements</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#section-6" class="xref">6</a>.  <a href="#name-channel-binding" class="xref">Channel Binding</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-channel-binding" class="internal xref">Channel Binding</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
-                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="xref">6.1</a>.  <a href="#name-default-channel-binding" class="xref">Default Channel Binding</a></p>
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-default-channel-binding" class="internal xref">Default Channel Binding</a></p>
 </li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#section-7" class="xref">7</a>.  <a href="#name-formal-syntax" class="xref">Formal Syntax</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-formal-syntax" class="internal xref">Formal Syntax</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
-            <p id="section-toc.1-1.8.1"><a href="#section-8" class="xref">8</a>.  <a href="#name-security-considerations" class="xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
-            <p id="section-toc.1-1.9.1"><a href="#section-9" class="xref">9</a>.  <a href="#name-iana-considerations" class="xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
-            <p id="section-toc.1-1.10.1"><a href="#section-10" class="xref">10</a>. <a href="#name-normative-references" class="xref">Normative References</a></p>
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-normative-references" class="internal xref">Normative References</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
-            <p id="section-toc.1-1.11.1"><a href="#appendix-A" class="xref"></a><a href="#name-acknowledgments" class="xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.11.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
-            <p id="section-toc.1-1.12.1"><a href="#appendix-B" class="xref"></a><a href="#name-authors-address" class="xref">Author's Address</a></p>
+            <p id="section-toc.1-1.12.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1191,7 +1191,7 @@ When used in combination with TLS or an equivalent security layer these mechanis
       </h2>
 <p id="section-1-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
 "<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
-described in BCP 14 <span>[<a href="#RFC2119" class="xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="xref">RFC8174</a>]</span> when, and only when, they
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
 appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1202,7 +1202,7 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
       </h2>
 <p id="section-2-1">TODO Introduction<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">This specification describes a family of authentication mechanisms called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.<a href="#section-2-2" class="pilcrow">¶</a></p>
-<p id="section-2-3">OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" <span>[<a href="#RFC5801" class="xref">RFC5801</a>]</span>. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.<a href="#section-2-3" class="pilcrow">¶</a></p>
+<p id="section-2-3">OPAQUE as specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" <span>[<a href="#RFC5801" class="cite xref">RFC5801</a>]</span>. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.<a href="#section-2-3" class="pilcrow">¶</a></p>
 <p id="section-2-4">The OPAQUE algorithm provides the following features which this mechanism makes use of:
 * The authentication information stored in an authentication database on the server is not sufficient to impersonate the client. It is additionally salted and bound to a private key of the server, making pre-stored dictionary attack impossible.
 * Successfull authentication does not grant the server enough information to impersonate the client.
@@ -1217,14 +1217,33 @@ appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶<
 <a href="#section-3" class="section-number selfRef">3. </a><a href="#name-opaque-algorithm-overview" class="section-name selfRef">OPAQUE Algorithm Overview</a>
       </h2>
 <p id="section-3-1">The Authenticated Key Exchange defined by OPAQUE consists of three messages -- KE1, KE2 and KE3 -- send by the client (KE1, KE3) and server (KE2) respectively. A client knows the outcome of the authentication after receiving KE2, the server after receiving KE3.<a href="#section-3-1" class="pilcrow">¶</a></p>
-<p id="section-3-2">The following is a description of a full SASL OPAQUE authentication exchange. Nothing in OPAQUE prevents sending the first client response with the SASL authentication request as defined by an application protocol ("initial client response"). See <span>[<a href="#RFC4422" class="xref">RFC4422</a>]</span> for more details.<a href="#section-3-2" class="pilcrow">¶</a></p>
-<p id="section-3-3">The OPAQUE client starts by being in posession of an username and password. It uses the password to generate a KE1 structure as per OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="xref">I-D.irtf-cfrg-opaque</a>]</span>, and sends it and the username to the server.
-The server retrieves the corresponding authentication information, i.e. registration record, OPRF seed, server private key, and the key-stretching function (KSF) parameters used at registration. It uses the first three to generate a KE2 structure as per OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="xref">I-D.irtf-cfrg-opaque</a>]</span> and sends that, channel binding data (if any) and the KSF parameters to the client.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-2">The following is a description of a full SASL OPAQUE authentication exchange. Nothing in OPAQUE prevents sending the first client response with the SASL authentication request as defined by an application protocol ("initial client response"). See <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>]</span> for more details.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The OPAQUE client starts by being in posession of an username and password. It uses the password to generate a KE1 structure as per OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="cite xref">I-D.irtf-cfrg-opaque</a>]</span>, and sends it and the username to the server.
+The server retrieves the corresponding authentication information, i.e. registration record, OPRF seed, server private key, and the key-stretching function (KSF) parameters used at registration. It uses the first three to generate a KE2 structure as per OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="cite xref">I-D.irtf-cfrg-opaque</a>]</span> and sends that, channel binding data (if any) and the KSF parameters to the client.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <p id="section-3-4">The client authenticates the server using KE2 and the KSF parameters, also showing the integrity of the channel binding data in the process, and generates a final KE3 it can return to the server.<a href="#section-3-4" class="pilcrow">¶</a></p>
-<p id="section-3-5">TODO: Specify the exact math from OPAQUE and how it protects the channel binding data. TL;DR both KE2 and KE3 contain a MAC over data processed in the authentication exchange, those should protect cb-data.<a href="#section-3-5" class="pilcrow">¶</a></p>
-<p id="section-3-6">Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.<a href="#section-3-6" class="pilcrow">¶</a></p>
-<p id="section-3-7">TODO: Would it be sensible to send the values contained in KE1/2/3 directly and change up the generation of the KE2 and KE3 MACs to be over the line-encoding like it is in SCRAM?<a href="#section-3-7" class="pilcrow">¶</a></p>
-<p id="section-3-8">TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)<a href="#section-3-8" class="pilcrow">¶</a></p>
+<p id="section-3-5">The three messages KE1, KE2 and KE3 are generated using the following functions specified in OPAQUE <span>[<a href="#I-D.irtf-cfrg-opaque" class="cite xref">I-D.irtf-cfrg-opaque</a>]</span>:<a href="#section-3-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3-6">
+<pre>
+KE1 := ClientInit(password)
+
+KE2 := ServerInit(server_identity, server_private_key, server_public_key, record, credential_identifier, oprf_seed, KE1, client_identity)
+
+KE3 := ClientFinish(client_identity, server_identity, KE2)
+</pre><a href="#section-3-6" class="pilcrow">¶</a>
+</div>
+<p id="section-3-7">The values of <code>client_identity</code> and <code>server_identity</code> are set to:<a href="#section-3-7" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3-8">
+<pre>
+client_identity := client-first-message + "," + client_public_key
+
+server_identity := server-message-bare + "," + server_public_key
+</pre><a href="#section-3-8" class="pilcrow">¶</a>
+</div>
+<p id="section-3-9">With the values and encodings of the remaining parameters per the OPAQUE specification, and <code>+</code> indicating concatenation.<a href="#section-3-9" class="pilcrow">¶</a></p>
+<p id="section-3-10">Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.<a href="#section-3-10" class="pilcrow">¶</a></p>
+<p id="section-3-11">TODO: We should probably set context to prevent cross-protocol attacks.<a href="#section-3-11" class="pilcrow">¶</a></p>
+<p id="section-3-12">TODO: With the current design the KSF parameters can not be MAC-verified until after they have been used. This is bad.<a href="#section-3-12" class="pilcrow">¶</a></p>
+<p id="section-3-13">TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)<a href="#section-3-13" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="opaque-mechanism-names">
@@ -1252,47 +1271,47 @@ C: p=&lt;ke3&gt;
 <ul class="normal">
 <li class="normal" id="section-5-3.1">A GS2 header consisting of a flag indicating channel binding support and usage, and an optional SASL authorization identity.<a href="#section-5-3.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-3.2">The OPRF credential request (contained in ke1)<a href="#section-5-3.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-3.2">The authentication ID (AuthID) of the user.<a href="#section-5-3.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-3.3">A client nonce and ephemeral public key for the AKE protocol (contained in ke1)<a href="#section-5-3.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-3.3">OPAQUE KE1, containing the OPRF credential request, a nonce, and an ephemeral public key.<a href="#section-5-3.3" class="pilcrow">¶</a>
 </li>
       </ul>
 <p id="section-5-4">In response the server sends the "server-message" containing:<a href="#section-5-4" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5-5.1">The OPRF credential response (contained in ke2)<a href="#section-5-5.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5-5.1">An encoding of requested channel binding data<a href="#section-5-5.1" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-5.2">A server nonce and ephemeral public key used by the AKE protocol (contained in ke2)<a href="#section-5-5.2" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-5.2">Parameters for the KSF that needs to be used by the client<a href="#section-5-5.2" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-5.3">A MAC proving the integrity of the exchange so far and cryptographically authenticating the server to the client (contained in ke2)<a href="#section-5-5.3" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-5.3">OPAQUE KE2, containting the OPRF credential response, a nonce, and an ephemeral public key.<a href="#section-5-5.3" class="pilcrow">¶</a>
 </li>
-        <li class="normal" id="section-5-5.4">Parameters for the KSF that needs to be used by the client<a href="#section-5-5.4" class="pilcrow">¶</a>
+        <li class="normal" id="section-5-5.4">A MAC proving the integrity of the exchange so far and cryptographically authenticating the server to the client (also contained in KE2)<a href="#section-5-5.4" class="pilcrow">¶</a>
 </li>
       </ul>
-<p id="section-5-6">The client the recovers a long term private key and client-only export key from the OPRF response using the user-provided password.<a href="#section-5-6" class="pilcrow">¶</a></p>
-<p id="section-5-7">To finalize the authentication a client sends a "client-final-message" containing itself a MAC over the exchange, thus cryptographically authenticating the client to the server.<a href="#section-5-7" class="pilcrow">¶</a></p>
+<p id="section-5-6">The client then recovers a long term private key and client-only export key from the OPRF response using the defined KSF with the user-provided password and parameters sent by the server.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<p id="section-5-7">To finalize the authentication a client sends a "client-final-message" containing itself a MAC over the exchange (in KE3), thus cryptographically authenticating the client to the server.<a href="#section-5-7" class="pilcrow">¶</a></p>
 <div id="opaque-attributes">
 <section id="section-5.1">
         <h3 id="name-opaque-attributes">
 <a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-opaque-attributes" class="section-name selfRef">OPAQUE Attributes</a>
         </h3>
-<p id="section-5.1-1">This section details all attributes permissible in messages, their use and their value format. All Attributes a single US-ASCII letters and case-sensitive. The selection of letters used for attributes is based on SCRAM <span>[<a href="#RFC5802" class="xref">RFC5802</a>]</span> to make it easier to adapt extensions defined for SCRAM to this mechanism.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<p id="section-5.1-2">Note that similar to SCRAM the order of attributes is fixed for all messages, except for extension attributes which are limited to designated positions but may appear in any order.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-1">This section details all attributes permissible in messages, their use and their value format. All Attributes a single US-ASCII letters and case-sensitive. The selection of letters used for attributes is based on SCRAM <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>]</span> to make it easier to adapt extensions defined for SCRAM to this mechanism.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2">Note that similar to SCRAM the order of attributes is fixed for all messages, except for extension attributes which are limited to designated positions but may appear in any order. Implementations <span class="bcp14">MUST NOT</span> assume a specific ordering of extensions.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.1-3.1">a: This is an optional attribute and is part of the GS2 <span>[<a href="#RFC5801" class="xref">RFC5801</a>]</span> bridge between GSS-API and SASL. Its specification and usage is the same as defined in <span>[<a href="#RFC5802" class="xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>.<a href="#section-5.1-3.1" class="pilcrow">¶</a>
+<li class="normal" id="section-5.1-3.1">a: This is an optional attribute and is part of the GS2 <span>[<a href="#RFC5801" class="cite xref">RFC5801</a>]</span> bridge between GSS-API and SASL. Its specification and usage is the same as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>.<a href="#section-5.1-3.1" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.1-3.2">n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" <span>[<a href="#RFC4422" class="xref">RFC4422</a>]</span>). Its specification and usage is the same as defined in <span>[<a href="#RFC5802" class="xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>.<a href="#section-5.1-3.2" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.1-3.2">n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>]</span>). Its encoding, preparation, and usage is the same as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>.<a href="#section-5.1-3.2" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-5.1-3.3">m: This attribute is reserved for future extensibility. In this version of OPAQUE its presence in a client or server message <span class="bcp14">MUST</span> cause authentication failure when the attribute is parsed by the other end.<a href="#section-5.1-3.3" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.1-3.4">r: This attribute specifies a base64-encoded serialization of the KE1 message as specified by <span>[<a href="#OPAQUE" class="xref">OPAQUE</a>]</span>.<a href="#section-5.1-3.4" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.1-3.4">r: This attribute specifies a base64-encoded serialization of the KE1 message as specified by <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span>.<a href="#section-5.1-3.4" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.1-3.5">c: This <span class="bcp14">REQUIRED</span> attribute specifies the base64-encoded GS2 header and channel binding data. Its specification is the same as defined in <span>[<a href="#RFC5802" class="xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>, however it is sent by the server to the client instead of the other way around as in SCRAM.<a href="#section-5.1-3.5" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.1-3.5">c: This <span class="bcp14">REQUIRED</span> attribute specifies the base64-encoded GS2 header and channel binding data. Its specification is the same as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>, however it is sent by the server to the client instead of the other way around as in SCRAM.<a href="#section-5.1-3.5" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-5.1-3.6">i: This attribute specifies base64-encoded parameters for the KSF to be used. The format of the parameters is specific to the KSF in use.<a href="#section-5.1-3.6" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.1-3.7">v: This attribute specifies a base64-encoded serialization of the KE2 message as specified by <span>[<a href="#OPAQUE" class="xref">OPAQUE</a>]</span>.<a href="#section-5.1-3.7" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.1-3.7">v: This attribute specifies a base64-encoded serialization of the KE2 message as specified by <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span>.<a href="#section-5.1-3.7" class="pilcrow">¶</a>
 </li>
-          <li class="normal" id="section-5.1-3.8">p: This attribute specifies a base64-encoded serialization of the KE3 message as specified by <span>[<a href="#OPAQUE" class="xref">OPAQUE</a>]</span>.<a href="#section-5.1-3.8" class="pilcrow">¶</a>
+          <li class="normal" id="section-5.1-3.8">p: This attribute specifies a base64-encoded serialization of the KE3 message as specified by <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span>.<a href="#section-5.1-3.8" class="pilcrow">¶</a>
 </li>
           <li class="normal" id="section-5.1-3.9">Further as of now unspecified mandatory and optional extensions. Mandatory extensions are encoded using the "m" attribute, optional attributes may use any unassigned attribute name. Unknown optional attributes <span class="bcp14">MUST</span> be ignored upon receipt.<a href="#section-5.1-3.9" class="pilcrow">¶</a>
 </li>
@@ -1304,7 +1323,7 @@ C: p=&lt;ke3&gt;
         <h3 id="name-sasl-mechanism-requirements">
 <a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-sasl-mechanism-requirements" class="section-name selfRef">SASL Mechanism Requirements</a>
         </h3>
-<p id="section-5.2-1">This section describes the required information for SASL mechanisms as laid out in <span>[<a href="#RFC4422" class="xref">RFC4422</a>], <a href="https://rfc-editor.org/rfc/rfc4422#section-5" class="relref">Section 5</a></span>.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-1">This section describes the required information for SASL mechanisms as laid out in <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>], <a href="https://rfc-editor.org/rfc/rfc4422#section-5" class="relref">Section 5</a></span>.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
 <p id="section-5.2-2">1) "OPAQUE-A255SHA" and "OPAQUE-A255SHA-PLUS"<a href="#section-5.2-2" class="pilcrow">¶</a></p>
 <p id="section-5.2-3">2a) OPAQUE is a client-first mechanism<a href="#section-5.2-3" class="pilcrow">¶</a></p>
 <p id="section-5.2-4">2b) OPAQUE does not send any additional data to indicate a successful outcome. All authentication exchanges take 3 messages regardless of success.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
@@ -1321,7 +1340,7 @@ C: p=&lt;ke3&gt;
 <a href="#section-6" class="section-number selfRef">6. </a><a href="#name-channel-binding" class="section-name selfRef">Channel Binding</a>
       </h2>
 <p id="section-6-1">OPAQUE supports binding the authentication to an underlying secure transport. Support for channel binding is optional, therefore the usage of channel binding is negotiable.<a href="#section-6-1" class="pilcrow">¶</a></p>
-<p id="section-6-2">The negotiation of channel binding is performed as defined in <span>[<a href="#RFC5802" class="xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-6" class="relref">Section 6</a></span> with the following differences:<a href="#section-6-2" class="pilcrow">¶</a></p>
+<p id="section-6-2">The negotiation of channel binding is performed as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-6" class="relref">Section 6</a></span> with the following differences:<a href="#section-6-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-6-3.1">The non-PLUS and PLUS variants of the mechanism are instead named OPAQUE-&lt;variant&gt; and OPAQUE-&lt;variant&gt;-PLUS respectively.<a href="#section-6-3.1" class="pilcrow">¶</a>
 </li>
@@ -1334,7 +1353,7 @@ C: p=&lt;ke3&gt;
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-default-channel-binding" class="section-name selfRef">Default Channel Binding</a>
         </h3>
 <p id="section-6.1-1">'tls-exporter' is the default channel binding type for any application that do not specify one.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
-<p id="section-6.1-2">Servers <span class="bcp14">MUST</span> implement the 'tls-exporter' <span>[<a href="#RFC9266" class="xref">RFC9266</a>]</span> channel binding type if they implement any channel binding and use TLS. Clients <span class="bcp14">SHOULD</span> implement the 'tls-exporter' <span>[<a href="#RFC9266" class="xref">RFC9266</a>]</span> channel binding type if they implement any and use TLS.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">Servers <span class="bcp14">MUST</span> implement the 'tls-exporter' <span>[<a href="#RFC9266" class="cite xref">RFC9266</a>]</span> channel binding type if they implement any channel binding and use TLS. Clients <span class="bcp14">SHOULD</span> implement the 'tls-exporter' <span>[<a href="#RFC9266" class="cite xref">RFC9266</a>]</span> channel binding type if they implement any and use TLS.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
 <p id="section-6.1-3">Servers <span class="bcp14">MUST</span> use the channel binding type indicated by the client, or fail authentication if they do not support it.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1345,9 +1364,9 @@ C: p=&lt;ke3&gt;
       <h2 id="name-formal-syntax">
 <a href="#section-7" class="section-number selfRef">7. </a><a href="#name-formal-syntax" class="section-name selfRef">Formal Syntax</a>
       </h2>
-<p id="section-7-1">The following syntax specification is written in Augmented Backus-Naur Form (ABNF) notation as specified in <span>[<a href="#RFC5234" class="xref">RFC5234</a>]</span>. The non-terminals "UTF8-2", "UTF8-3" and "UTF8-4" are defined in <span>[<a href="#RFC3629" class="xref">RFC3629</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
-<p id="section-7-2">The syntax is based in large parts on <span>[<a href="#RFC5802" class="xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-7" class="relref">Section 7</a></span>, which may be referenced for clarification. If this specification and <span>[<a href="#RFC5802" class="xref">RFC5802</a>]</span> are in conflict, this speification takes priority.<a href="#section-7-2" class="pilcrow">¶</a></p>
-<p id="section-7-3">Used definitions from <span>[<a href="#RFC5802" class="xref">RFC5802</a>]</span> are reproduced here for convenience:<a href="#section-7-3" class="pilcrow">¶</a></p>
+<p id="section-7-1">The following syntax specification is written in Augmented Backus-Naur Form (ABNF) notation as specified in <span>[<a href="#RFC5234" class="cite xref">RFC5234</a>]</span>. The non-terminals "UTF8-2", "UTF8-3" and "UTF8-4" are defined in <span>[<a href="#RFC3629" class="cite xref">RFC3629</a>]</span>.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">The syntax is based in large parts on <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-7" class="relref">Section 7</a></span>, which may be referenced for clarification. If this specification and <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>]</span> are in conflict, this speification takes priority.<a href="#section-7-2" class="pilcrow">¶</a></p>
+<p id="section-7-3">Used definitions from <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>]</span> are reproduced here for convenience:<a href="#section-7-3" class="pilcrow">¶</a></p>
 <div class="alignLeft art-text artwork" id="section-7-4">
 <pre>
 ALPHA = &lt;as defined in RFC 5234 appendix B.1&gt;
@@ -1435,9 +1454,13 @@ client-first-message-bare =
 
 client-first-message = gs2-header client-first-message-bare
 
-server-message =
+validator = "v=" base64
+
+server-message-bare =
             [reserved-mext ","] channel-binding "," ksf-params ","
-            auth-response ["," extensions]
+            credentials-response ["," extensions]
+
+server-message = server-message-bare "," validator
 
 client-final-message = "p=" base64
 </pre><a href="#section-7-6" class="pilcrow">¶</a>
@@ -1457,7 +1480,7 @@ client-final-message = "p=" base64
       <h2 id="name-iana-considerations">
 <a href="#section-9" class="section-number selfRef">9. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-9-1">The IANA is requested to add the following family of SASL mechanisms to the SASL Mechanism registry established by <span>[<a href="#RFC4422" class="xref">RFC4422</a>]</span>:<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-1">The IANA is requested to add the following family of SASL mechanisms to the SASL Mechanism registry established by <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>]</span>:<a href="#section-9-1" class="pilcrow">¶</a></p>
 <p id="section-9-2">To: iana@iana.org
 Subject: Registration of new SASL family OPAQUE<a href="#section-9-2" class="pilcrow">¶</a></p>
 <p id="section-9-3">SASL mechanism name (or prefix for the family): OPAQUE-
