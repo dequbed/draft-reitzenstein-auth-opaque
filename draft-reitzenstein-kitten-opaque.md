@@ -38,9 +38,10 @@ informative:
 
 --- abstract
 
-TODO reasoning
-
 This specification describes a family of Simple Authentication and Security Layer (SASL, RFC4422) authentication mechanisms based on the OPAQUE asymmetric password-authenticated key agreement (PAKE) algorithm.
+
+They offer two distinct advantages over the SCRAM family of mechanisms. The underlying OPAQUE algorithm provides the ability for clients to register without the servers getting access to the clear text password of an user, preventing password exfiltration at registration. Secondly a successful authentication produces a long-term secret key only known to the client that can be used to access encrypted server-side data without needing to share keys between clients via a side-band mechanism.
+
 When used in combination with TLS or an equivalent security layer these mechanisms allow for secure channel binding.
 
 --- middle
@@ -51,8 +52,6 @@ When used in combination with TLS or an equivalent security layer these mechanis
 
 
 # Introduction
-
-TODO Introduction
 
 This specification describes a family of authentication mechanisms called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.
 
@@ -93,12 +92,6 @@ The values of `client_identity` and `server_identity` are set to:
 With the values and encodings of the remaining parameters per the OPAQUE specification, and `+` indicating concatenation.
 
 Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.
-
-TODO: We should probably set context to prevent cross-protocol attacks.
-
-TODO: With the current design the KSF parameters can not be MAC-verified until after they have been used. This is bad.
-
-TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)
 
 # OPAQUE Mechanism Names
 
@@ -186,6 +179,11 @@ The negotiation of channel binding is performed as defined in {{RFC5802, Section
 Servers MUST implement the 'tls-exporter' {{RFC9266}} channel binding type if they implement any channel binding and use TLS. Clients SHOULD implement the 'tls-exporter' {{RFC9266}} channel binding type if they implement any and use TLS.
 
 Servers MUST use the channel binding type indicated by the client, or fail authentication if they do not support it.
+
+# OPAQUE-A255SHA(-PLUS)
+
+TODO: Define one set of primitives; probably OPAQUE-A255SHA(-PLUS), using HKDF, HMAC, ristretto255, SHA-512 and Argon2i(d?)
+
 
 # Formal Syntax
 
@@ -291,8 +289,19 @@ The following definitions are specific to OPAQUE:
 
 # Security Considerations
 
-TODO Security
+The KSF parameters and channel bindings aren't authenticated before KSF usage, allowing a DoS of a client by an malicious actor posing as the server.
 
+If not used with a secure channel providing confidentiality this mechanism leaks the authid and authzid of an authenticating user to any passive observer.
+
+The cryptographic security of this mechanism is not increased over the one provided by the underlying OPAQUE algorithm, so all security considerations applying to that specification also apply to this one.
+
+# Open Issues
+
+- OPAQUE allows for a static context to be bound into generated keys to prevent cross-protocol and downgrade attacks. We should probably set that to the mechanism name (e.g. 'OPAQUE-A255SHA')
+
+- With the current design the KSF parameters can not be MAC-verified until after they have been used. This is bad. The only other option is using the ephemeral keypair to generate a MAC key and use that. This may impact security.
+
+- This mechanism should be extended to also become a GSS-API mechanism like SCRAM is.
 
 # IANA Considerations
 
@@ -309,11 +318,10 @@ Owner/Change controller: the IETF
 Note: None
 
 
-IANA is further requested to assign an OID for this GSS mechanism in the SMI numbers registry, with the prefix of iso.org.dod.internet.security.mechanisms (1.3.6.1.5.5) and to reference this specification in the registry.
-
 --- back
 
 # Acknowledgments
 {:numbered="false"}
 
-TODO acknowledge.
+Thank you to Daniel Bourdrez, Hugo Krawczyk, Kevin Lewi, and C. A. Wood for their work on the OPAQUE PAKE that this mechanism is based on.
+Thank you to Abhijit Menon-Sen, Alexey Melnikov, Nicolás Williams, and Chris Newman for their work on the SCRAM RFC, most of which this draft oh so blatanly steals for its own gain.
