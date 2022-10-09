@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2022-10-06T00:54:20.605010+00:00",
+  "timestamp": "2022-10-09T00:52:35.318201+00:00",
   "repo": "dequbed/draft-reitzenstein-auth-opaque",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDOH68eks5TPEb1",
       "title": "Usage of Channel Binding",
       "url": "https://github.com/dequbed/draft-reitzenstein-auth-opaque/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "dequbed",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Moving this issue to not derail the original one:\r\n\r\n> Channel binding is about binding an authentication to an underlying encrypted channel like TLS and thus making sure that both sides see the same channel. That's very much not something that OPAQUE gives you implicitly.\r\n\r\nok, it might seem a dumb question, but it's genuine. what does it matter if a channel is encrypted or not, if the goal is to make sure that both sides see the same channel? and if the two parties can authenticate each other (which they do) then presuming that the ephemeral keys are indeed only used once, the authentication is bound to that tcp connection - limiting here to tcp like transports makes sense i hope, with udp this might not work. so i think opaque does indeed bind to a channel implicitly, and i think the fact of it being encrypted does not matter, as long as the channel is tcp-like connection-based.\r\n\r\n_Originally posted by @stef in https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/375#issuecomment-1267128310_\r\n",
       "createdAt": "2022-10-04T15:19:41Z",
-      "updatedAt": "2022-10-05T19:54:49Z",
-      "closedAt": null,
+      "updatedAt": "2022-10-06T18:02:19Z",
+      "closedAt": "2022-10-06T18:02:19Z",
       "comments": [
         {
           "author": "dequbed",
@@ -162,6 +162,13 @@
           "body": "hmmm, maybe not, not sure if the longterm server key is already available to the client before opening the envelope. the spec has gone quite far from the original paper, and it's kinda confusing with all the changes and back-and-forth over the last years that were put into the draft.",
           "createdAt": "2022-10-05T19:54:49Z",
           "updatedAt": "2022-10-05T19:54:49Z"
+        },
+        {
+          "author": "dequbed",
+          "authorAssociation": "OWNER",
+          "body": "At this point I have nothing to add to this issue. If there are more comments on the original topic feel free to add them.",
+          "createdAt": "2022-10-06T18:02:18Z",
+          "updatedAt": "2022-10-06T18:02:18Z"
         }
       ]
     },
@@ -170,16 +177,24 @@
       "id": "I_kwDOH68eks5TQC6x",
       "title": "Integrity protecting the authentication exchange",
       "url": "https://github.com/dequbed/draft-reitzenstein-auth-opaque/issues/2",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "dequbed",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "Link to the upstream issue required for this so I don't lose it: https://github.com/cfrg/draft-irtf-cfrg-opaque/issues/375",
       "createdAt": "2022-10-04T18:59:47Z",
-      "updatedAt": "2022-10-04T18:59:47Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2022-10-06T17:36:48Z",
+      "closedAt": "2022-10-06T17:36:48Z",
+      "comments": [
+        {
+          "author": "dequbed",
+          "authorAssociation": "OWNER",
+          "body": "The current solution has become to use the parts of the exchange requiring integrity protection in the client- and server_identity values.\r\n\r\nThis does however leaves the issue that the KSF parameters can neither directly nor indirectly be validated until after they have been used. This is a problem that may not be easily solveable given the current 3DH architecture.",
+          "createdAt": "2022-10-06T17:36:38Z",
+          "updatedAt": "2022-10-06T17:36:38Z"
+        }
+      ]
     }
   ],
   "pulls": []
