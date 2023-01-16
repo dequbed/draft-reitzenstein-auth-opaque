@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>A SASL and GSS-API Mechanism using the asymmetric password-authenticated key agreement OPAQUE</title>
+<meta content="Nadja von Reitzenstein Čerpnjak" name="author">
+<meta content="
+       This specification describes a Simple Authentication and Security Layer (SASL, RFC4422) authentication mechanisms based on the OPAQUE asymmetric password-authenticated key agreement (PAKE) protocol. 
+       The mechanism offers two distinct advantages over the SCRAM family of mechanisms. The underlying OPAQUE protocol provides the ability for clients to register without the server having to have access to the clear text password of an user, preventing password exfiltration at registration. Secondly a successful authentication produces a long-term secret key specific to the user that can be used to access encrypted server-side data without needing to share keys between clients via side-band mechanisms. 
+       When used in combination with TLS or an equivalent security layer these mechanisms allow for secure channel binding. 
+    " name="description">
+<meta content="xml2rfc 3.15.3" name="generator">
+<meta content="Internet-Draft" name="keyword">
+<meta content="draft-reitzenstein-kitten-opaque-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.15.3
+    Python 3.10.9
+    appdirs 1.4.4
+    ConfigArgParse 1.5.3
+    google-i18n-address 2.5.2
+    html5lib 1.1
+    intervaltree 3.1.0
+    Jinja2 3.1.2
+    lxml 4.9.2
+    MarkupSafe 2.1.1
+    pycountry 22.3.5
+    PyYAML 6.0
+    requests 2.28.1
+    setuptools 65.6.0
+    six 1.16.0
+    wcwidth 0.2.5
+-->
+<link href="draft-reitzenstein-kitten-opaque.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Cabin Condensed SemiBold'), local('CabinCondensed-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/cabincondensed-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+h1, h2, h3, h4, h5, h6 {
+  font-family: "Cabin Condensed", sans-serif;
+  font-weight: 600;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1#title {
+  font-size: 32px;
+  line-height: 40px;
+  clear: both;
+}
+h1#title, h1#rfcnum {
+  margin: 1.5em 0 0.2em;
+}
+h1#rfcnum + h1#title {
+  margin: 0.2em 0;
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+}
+#abstract+p code, #abstract+p samp, #abstract+p tt {
+  font-size: 16px;
+  line-height: 0;
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignRight.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignRight {
+  margin: 1em 0;
+}
+.alignRight > *:first-child {
+  border: none;
+  margin: 0;
+  float: right;
+  clear: both;
+}
+.alignRight > *:nth-child(2) {
+  clear: both;
+  display: block;
+  border: none;
+}
+svg {
+  display: block;
+}
+/* font-family isn't space-separated, but =~ will have to do */
+svg[font-family~="monospace" i], svg [font-family~="monospace" i] {
+  font-family: var(--font-mono);
+}
+.alignCenter.art-text {
+  background-color: var(--highlight-color);
+  border: 1px solid var(--line-color);
+  border-radius: 3px;
+  padding: 0.5em 1em 0;
+  margin-bottom: 0.5em;
+}
+.alignCenter.art-text pre {
+  padding: 0;
+  width: auto;
+}
+.alignCenter {
+  margin: 1em 0;
+}
+.alignCenter > *:first-child {
+  border: none;
+  /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+     support flexbox yet.
+  */
+  display: table;
+  margin: 0 auto;
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+}
+:is(ol, ul) :is(ol, ul) {
+  margin-left: 1em;
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+.ulCompact li {
+  margin: 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+}
+ul.empty li, .ulEmpty li {
+  margin-top: 0.5em;
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  line-height: 100%;
+  margin: 0 0 0 2em;
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+}
+dl > dt {
+  float: left;
+  margin-right: 1em;
+  min-width: 12ch;
+}
+dl.dlNewline > dt {
+  float: none;
+}
+dl > dd {
+  margin-bottom: .8em;
+  margin-left: var(--indent) !important; /* stupid element overrides */
+  min-height: 2ex;
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:first-child, .break:first-child + *) {
+  margin-top: 0;
+}
+:is(dl.compact, .dlCompact) > dd > :is(:last-child) {
+  margin-bottom: 0;
+}
+dl > dd > dl {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a, a[href].selfRef:hover {
+  text-decoration: none;
+}
+a[href].selfRef {
+  color: var(--text-color);
+}
+a[href] {
+  color: var(--link-color);
+}
+a[href]:hover {
+  text-decoration: underline;
+}
+a[href].selfRef:hover {
+  background-color: var(--highlight-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+}
+figure blockquote {
+  margin: 0.8em 0.4em 0.4em;
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) p {
+    margin: -2px 0;
+    max-height: 0;
+    transition: max-height 2s ease, margin 0.5s ease 0.5s;
+    overflow: hidden;
+  }
+  :is(#status-of-memo, #copyright):hover p,
+  :is(#status-of-memo, #copyright) h2:target ~ p {
+    margin: 0.5em 0;
+    max-height: 500px;
+    overflow: auto;
+  }
+  pre, svg {
+    display: inline-block;
+    overflow-x: auto;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+}
+table.right {
+  margin-left: auto;
+}
+table.center {
+  margin-left: auto;
+  margin-right: auto;
+}
+table.left {
+  margin-right: auto;
+}
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+table caption {
+  margin: 0;
+  padding: 3px 0 3px 1em;
+}
+table p {
+  margin: 0;
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+}
+a.pilcrow[href] { color: var(--pilcrow-weak); }
+a.pilcrow[href]:hover { text-decoration: none; }
+@media not print {
+  :hover > a.pilcrow {
+    opacity: 1;
+  }
+  a.pilcrow[href]:hover {
+    color: var(--pilcrow-strong);
+    background-color: transparent;
+  }
+}
+@media print {
+  a.pilcrow {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: 14.5px;
+}
+.role {
+  font-variant: all-small-caps;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+}
+#identifiers dt {
+  width: var(--identifier-width);
+  min-width: var(--identifier-width);
+  clear: left;
+  float: left;
+  text-align: right;
+}
+#identifiers dd {
+  margin: 0;
+  margin-left: calc(1em + var(--identifier-width)) !important;
+  min-width: 5em;
+}
+#identifiers .authors .author {
+  display: inline-block;
+  margin-right: 1.5em;
+}
+#identifiers .authors .org {
+  font-style: italic;
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+}
+.docInfo .prepared {
+  float: left;
+}
+.docInfo .prepared {
+  float: right;
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+}
+#toc nav ul {
+  margin: 0 0.5em 0 0;
+  padding: 0;
+  list-style: none;
+}
+#toc nav li {
+  line-height: 1.3em;
+  margin: 0.75em 0;
+  padding-left: 1.2em;
+  text-indent: -1.2em;
+}
+#toc a.xref {
+  white-space: normal;
+}
+/* references */
+.references dt {
+  text-align: right;
+  font-weight: bold;
+  min-width: 7em;
+}
+.references dt:target::before {
+  content: "⇒";
+  width: 15px;
+  margin: 0 10px 0 -25px;
+}
+.references dd {
+  margin-left: 8em !important;
+  overflow: auto;
+}
+
+.refInstance {
+  margin-bottom: 1.25em;
+}
+
+.references .ascii {
+  margin-bottom: 0.25em;
+}
+
+/* index */
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  margin: 1em 0;
+}
+address.vcard .nameRole {
+  font-weight: 700;
+  margin-left: 0;
+}
+address.vcard .label {
+  margin: 0.5em 0;
+}
+address.vcard .type {
+  display: none;
+}
+.alternative-contact {
+  margin: 1.5em 0 1em;
+}
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses > section {
+    column-count: 2;
+    column-gap: 20px;
+  }
+  #authors-addresses > section > h2 {
+    column-span: all;
+  }
+  /* hack for break-inside: avoid-column */
+  #authors-addresses address {
+    display: inline-block;
+    break-inside: avoid-column;
+  }
+}
+
+.rfcEditorRemove p:first-of-type {
+  font-style: italic;
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+/* alternative layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+  }
+  #toc.active {
+      opacity: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 2px 0 2px 6px;
+    padding-right: 1em;
+    font-size: 18px;
+    line-height: 24px;
+    min-width: 190px;
+    text-align: right;
+    background-color: #444;
+    color: white;
+    cursor: pointer;
+  }
+  #toc h2::before { /* css hamburger */
+    float: right;
+    position: relative;
+    width: 1em;
+    height: 1px;
+    left: -164px;
+    margin: 8px 0 0 0;
+    background: white none repeat scroll 0 0;
+    box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+    content: "";
+  }
+  #toc nav {
+    display: none;
+    background-color: var(--background-color);
+    padding: 0.5em 1em 1em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    height: calc(100vh - 48px);
+    border-left: 1px solid #ddd;
+  }
+  #toc.active nav {
+    display: block;
+  }
+  /* Make the collapsed ToC header render white on gray also when it's a link */
+  #toc h2 a,
+  #toc h2 a:link,
+  #toc h2 a:focus,
+  #toc h2 a:hover,
+  #toc a.toplink,
+  #toc a.toplink:hover {
+    color: white;
+    background-color: #444;
+    text-decoration: none;
+  }
+  #toc a.toplink {
+    margin-top: 2px;
+  }
+}
+
+/* alternative layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+  }
+  #toc h2 {
+    margin: 0;
+    padding: 0.25em 1em 1em 0;
+  }
+  #toc nav {
+    display: block;
+    height: calc(90vh - 84px);
+    bottom: 0;
+    padding: 0.5em 0 2em;
+    overflow: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+  }
+  #toc nav > ul  {
+    margin-bottom: 2em;
+  }
+  #toc ul {
+    margin: 0 0 0 4px;
+    font-size: var(--small-font-size);
+  }
+  #toc ul :is(p, li) {
+    margin: 2px 0;
+    line-height: 22px;
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc, #n-introduction {
+    page-break-before: always;
+  }
+  #toc {
+    border-top: none;
+    padding-top: 0;
+  }
+  figure, pre {
+    page-break-inside: avoid;
+  }
+  figure {
+    overflow: scroll;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  h2+*, h3+*, h4+*, h5+*, h6+* {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Changes introduced to fix issues found during implementation */
+
+/* Separate body from document info even without intervening H1 */
+section {
+  clear: both;
+}
+
+/* Top align author divs, to avoid names without organization dropping level with org names */
+.author {
+  vertical-align: top;
+}
+
+/* Style section numbers with more space between number and title */
+.section-number {
+  padding-right: 0.5em;
+}
+
+/* Add styling for a link in the ToC that points to the top of the document */
+a.toplink {
+  float: right;
+  margin: 8px 0.5em 0;
+}
+
+/* Provide styling for table cell text alignment */
+table .text-left {
+  text-align: left;
+}
+table .text-center {
+  text-align: center;
+}
+table .text-right {
+  text-align: right;
+}
+
+/* Make the alternative author contact information look less like just another
+   author, and group it closer with the primary author contact information */
+.alternative-contact {
+  margin: 0.5em 0 0.25em 0;
+}
+address .non-ascii {
+  margin: 0 0 0 2em;
+}
+
+/* With it being possible to set tables with alignment
+  left, center, and right, { width: 100%; } does not make sense */
+table {
+  width: auto;
+}
+
+/* Avoid reference text that sits in a block with very wide left margin,
+   because of a long floating dt label.*/
+.references dd {
+  overflow: visible;
+}
+
+/* Control caption placement */
+caption {
+  caption-side: bottom;
+}
+
+/* Limit the width of the author address vcard, so names in right-to-left
+   script don't end up on the other side of the page. */
+
+address.vcard {
+  max-width: 20em;
+  margin-right: auto;
+}
+
+/* For address alignment dependent on LTR or RTL scripts */
+address div.left {
+  text-align: left;
+}
+address div.right {
+  text-align: right;
+}
+
+/* Give the table caption label the same styling as the figcaption */
+
+@media print {
+  .toplink {
+    display: none;
+  }
+
+  /* avoid overwriting the top border line with the ToC header */
+  #toc {
+    padding-top: 1px;
+  }
+
+  /* Avoid page breaks inside dl and author address entries */
+  dd {
+    page-break-before: avoid;
+  }
+  .vcard {
+    page-break-inside: avoid;
+  }
+
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg :is([stroke="black"], [stroke^="#000"]) {
+  stroke: var(--text-color);
+}
+svg :is([stroke="white"], [stroke^="#fff"]) {
+  stroke: var(--background-color);
+}
+svg :is([fill="black"], [fill^="#000"], :not([fill])) {
+  fill: var(--text-color);
+}
+svg :is([fill="white"], [fill^="#fff"]) {
+  fill: var(--background-color);
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">OPAQUE Authentication</td>
+<td class="right">January 2023</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">von Reitzenstein Čerpnjak</td>
+<td class="center">Expires 20 July 2023</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">WG Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-reitzenstein-kitten-opaque-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2023-01-16" class="published">16 January 2023</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2023-07-20">20 July 2023</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">N. von Reitzenstein Čerpnjak</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">A SASL and GSS-API Mechanism using the asymmetric password-authenticated key agreement OPAQUE</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This specification describes a Simple Authentication and Security Layer (SASL, RFC4422) authentication mechanisms based on the OPAQUE asymmetric password-authenticated key agreement (PAKE) protocol.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">The mechanism offers two distinct advantages over the SCRAM family of mechanisms. The underlying OPAQUE protocol provides the ability for clients to register without the server having to have access to the clear text password of an user, preventing password exfiltration at registration. Secondly a successful authentication produces a long-term secret key specific to the user that can be used to access encrypted server-side data without needing to share keys between clients via side-band mechanisms.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
+<p id="section-abstract-3">When used in combination with TLS or an equivalent security layer these mechanisms allow for secure channel binding.<a href="#section-abstract-3" class="pilcrow">¶</a></p>
+</section>
+<section class="note rfcEditorRemove" id="section-note.1">
+      <h2 id="name-discussion-venues">
+<a href="#name-discussion-venues" class="section-name selfRef">Discussion Venues</a>
+      </h2>
+<p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
+<p id="section-note.1-2">Discussion of this document takes place on the
+    Common Authentication Technology Next Generation Working Group mailing list (kitten@ietf.org),
+    which is archived at <span><a href="https://mailarchive.ietf.org/arch/browse/kitten/">https://mailarchive.ietf.org/arch/browse/kitten/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+<p id="section-note.1-3">Source for this draft and an issue tracker can be found at
+    <span><a href="https://github.com/dequbed/draft-reitzenstein-auth-opaque">https://github.com/dequbed/draft-reitzenstein-auth-opaque</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 20 July 2023.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2023 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1" class="keepWithNext"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-opaque-algorithm-overview" class="internal xref">OPAQUE Algorithm Overview</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-opaque-mechanism-name" class="internal xref">OPAQUE Mechanism Name</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-opaque-3dh-configuration-fo" class="internal xref">OPAQUE-3DH configuration for OPAQUE-A255SHA(-PLUS)</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-opaque-authentication-excha" class="internal xref">OPAQUE Authentication Exchange</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-opaque-attributes" class="internal xref">OPAQUE Attributes</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1.2.1">
+                    <p id="section-toc.1-1.6.2.1.2.1.1"><a href="#section-6.1.1" class="auto internal xref">6.1.1</a>.  <a href="#name-ksf-parameter-encoding" class="internal xref">KSF parameter encoding</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-sasl-mechanism-requirements" class="internal xref">SASL Mechanism Requirements</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-channel-binding" class="internal xref">Channel Binding</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-default-channel-binding" class="internal xref">Default Channel Binding</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-formal-syntax" class="internal xref">Formal Syntax</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#section-10" class="auto internal xref">10</a>. <a href="#name-open-issues" class="internal xref">Open Issues</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#section-11" class="auto internal xref">11</a>. <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12">
+            <p id="section-toc.1-1.12.1"><a href="#section-12" class="auto internal xref">12</a>. <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.1">
+                <p id="section-toc.1-1.12.2.1.1"><a href="#section-12.1" class="auto internal xref">12.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.12.2.2">
+                <p id="section-toc.1-1.12.2.2.1"><a href="#section-12.2" class="auto internal xref">12.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.13">
+            <p id="section-toc.1-1.13.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.14">
+            <p id="section-toc.1-1.14.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="conventions-and-definitions">
+<section id="section-1">
+      <h2 id="name-conventions-and-definitions">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-conventions-and-definitions" class="section-name selfRef">Conventions and Definitions</a>
+      </h2>
+<p id="section-1-1">The key words "<span class="bcp14">MUST</span>", "<span class="bcp14">MUST NOT</span>", "<span class="bcp14">REQUIRED</span>", "<span class="bcp14">SHALL</span>", "<span class="bcp14">SHALL NOT</span>", "<span class="bcp14">SHOULD</span>", "<span class="bcp14">SHOULD NOT</span>", "<span class="bcp14">RECOMMENDED</span>", "<span class="bcp14">NOT RECOMMENDED</span>",
+"<span class="bcp14">MAY</span>", and "<span class="bcp14">OPTIONAL</span>" in this document are to be interpreted as
+described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</span> <span>[<a href="#RFC8174" class="cite xref">RFC8174</a>]</span> when, and only when, they
+appear in all capitals, as shown here.<a href="#section-1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="introduction">
+<section id="section-2">
+      <h2 id="name-introduction">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<p id="section-2-1">This specification describes an authentication mechanism called OPAQUE, based on the asymmetric PAKE of the same name. The mechanisms provide strong mutual authentication and allow binding the authentication to an pre-existing underlying encrypted transport.<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">The mechanism specified in this document is a Simple Authentication and Security Layer (SASL) mechanism compatible to the bridge between SASL and the Generic Security Services Application Programming Interface (GSS-API) called "GS2" <span>[<a href="#RFC5801" class="cite xref">RFC5801</a>]</span>. This means that the mechanism can be used as either a SASL mechanism or a GSS-API mechanism.<a href="#section-2-2" class="pilcrow">¶</a></p>
+<p id="section-2-3">The OPAQUE algorithm provides the following features which this mechanism makes use of:<a href="#section-2-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-4.1">The authentication information stored in an authentication database on the server is not sufficient to impersonate the client. It is additionally salted and bound to a private key of the server, making pre-stored dictionary attack impossible.<a href="#section-2-4.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.2">Successful authentication does not grant the server enough information to impersonate the client.<a href="#section-2-4.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.3">Mutual authentication is implicit and required. A successful authentication always strongly authenticates both sides of the exchange.<a href="#section-2-4.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.4">A successful authentication provides both parties with an ephemeral shared secret. This secret has high entropy and can be used to establish a trusted encrypted channel without deriving trust from a 3rd party.<a href="#section-2-4.4" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-2-4.5">A successful authentication additionally provides the client with a constant secret. This secret is only known to the client and the same for every authentication. It can be used to e.g. store encrypted data on the server without having to manage keys locally.<a href="#section-2-4.5" class="pilcrow">¶</a>
+</li>
+      </ul>
+</section>
+</div>
+<div id="opaque-algorithm-overview">
+<section id="section-3">
+      <h2 id="name-opaque-algorithm-overview">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-opaque-algorithm-overview" class="section-name selfRef">OPAQUE Algorithm Overview</a>
+      </h2>
+<p id="section-3-1">The Authenticated Key Exchange defined by OPAQUE consists of three messages -- KE1, KE2 and KE3 -- send by the client (KE1, KE3) and server (KE2) respectively. A client knows the outcome of the authentication after receiving KE2, the server after receiving KE3.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">The following is a description of a full SASL OPAQUE-A255SHA authentication exchange. Nothing in OPAQUE-A255SHA prevents sending the first client response with the SASL authentication request as defined by an application protocol ("initial client response"). See <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>]</span> for more details.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The OPAQUE client starts by being in possession of an username and password. It uses the password to generate a KE1, and sends this message and the username to the server.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">The server retrieves the corresponding authentication information, i.e. registration record, OPRF seed, server private key, and the key-stretching function (KSF) parameters that were used at registration. It uses the first three to generate a KE2 message as per <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span> and sends that, channel binding data (if any) and the KSF parameters to the client.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<p id="section-3-5">The client authenticates the server using KE2 and the KSF parameters, also showing the integrity of the channel binding data in the process, and generates a final KE3 message it can return to the server.<a href="#section-3-5" class="pilcrow">¶</a></p>
+<p id="section-3-6">The three messages KE1, KE2 and KE3 are generated using the following functions specified in <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span> with the configuration specified in Section <a href="#opaque-3dh-configuration-for-opaque-a255sha-plus" class="auto internal xref">5</a>:<a href="#section-3-6" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3-7">
+<pre>
+KE1 := ClientInit(password)
+
+KE2 := ServerInit(
+         server_identity, server_private_key, server_public_key,
+         record, credential_identifier, oprf_seed, KE1, client_identity
+       )
+
+KE3 := ClientFinish(client_identity, server_identity, KE2)
+</pre><a href="#section-3-7" class="pilcrow">¶</a>
+</div>
+<p id="section-3-8">The values of <code>client_identity</code> and <code>server_identity</code> are set to the byte sequences:<a href="#section-3-8" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-3-9">
+<pre>
+client_identity := client-first-message + "," + client_public_key
+
+server_identity := server-message-bare + "," + server_public_key
+</pre><a href="#section-3-9" class="pilcrow">¶</a>
+</div>
+<p id="section-3-10">With the values and encodings of the remaining parameters per the OPAQUE specification, <code>client_</code>- and <code>server_public_key</code> being encoded as raw bytes, and <code>+</code> indicating concatenation.<a href="#section-3-10" class="pilcrow">¶</a></p>
+<p id="section-3-11">Upon receipt of KE3 the server can validate the authentication exchange including integrity of the channel binding data it sent previously, and extract a session key that strongly authenticates the client to the server.<a href="#section-3-11" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="opaque-mechanism-name">
+<section id="section-4">
+      <h2 id="name-opaque-mechanism-name">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-opaque-mechanism-name" class="section-name selfRef">OPAQUE Mechanism Name</a>
+      </h2>
+<p id="section-4-1">The name of the mechanism specified in this document is "OPAQUE-A255SHA" or "OPAQUE-A255SHA-PLUS" respectively. The "-PLUS" suffix is only used when the authenticating parties support and intent to use channel binding. If the server supports channel binding it <span class="bcp14">SHOULD</span> advertise both the bare and the plus version of this mechanism. If the server does not it will only advertise the bare version.<a href="#section-4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="opaque-3dh-configuration-for-opaque-a255sha-plus">
+<section id="section-5">
+      <h2 id="name-opaque-3dh-configuration-fo">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-opaque-3dh-configuration-fo" class="section-name selfRef">OPAQUE-3DH configuration for OPAQUE-A255SHA(-PLUS)</a>
+      </h2>
+<p id="section-5-1">The OPAQUE-3DH configuration according to Section 7 of <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span> used by the OPAQUE-A255SHA mechanism is made up of the following cryptographic primitives:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5-2.1">OPRF(ristretto255, SHA-512) as specified in <span><a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-voprf-17#section-4.1" class="relref">Section 4.1</a> of [<a href="#I-D.irtf-cfrg-voprf-17" class="cite xref">I-D.irtf-cfrg-voprf-17</a>]</span><a href="#section-5-2.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-2.2">HKDF <span>[<a href="#RFC5869" class="cite xref">RFC5869</a>]</span> using SHA-512 as KDF<a href="#section-5-2.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-2.3">HMAC <span>[<a href="#RFC2104" class="cite xref">RFC2104</a>]</span> using SHA-512 as MAC<a href="#section-5-2.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-2.4">SHA-512 as Hash<a href="#section-5-2.4" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-2.5">Argon2id <span>[<a href="#RFC9106" class="cite xref">RFC9106</a>]</span> as KSF, with the remaining parameters being set during an authentication exchange<a href="#section-5-2.5" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-2.6">The same ristretto255 group used by the OPRF as Group<a href="#section-5-2.6" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-5-2.7">The ASCII-String "SASL-OPAQUE-A255SHA" as Context<a href="#section-5-2.7" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-5-3">Implementations of this mechanism <span class="bcp14">SHOULD</span> default to Argon2id parameters of (t=1, p=4, m=2^21).<a href="#section-5-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="opaque-authentication-exchange">
+<section id="section-6">
+      <h2 id="name-opaque-authentication-excha">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-opaque-authentication-excha" class="section-name selfRef">OPAQUE Authentication Exchange</a>
+      </h2>
+<p id="section-6-1">An example of an OPAQUE-A255SHA authentication exchange consisting of three messages, send by the client, server and client respectively:<a href="#section-6-1" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6-2">
+<pre>
+C: n,,n=user,r=&lt;ke1&gt;
+S: c=biws,i=bT0yMDk3MTUyLHQ9MSxwPTQ=,v=&lt;ke2&gt;
+C: p=&lt;ke3&gt;
+</pre><a href="#section-6-2" class="pilcrow">¶</a>
+</div>
+<p id="section-6-3">First, the client sends the "client-first-message" containing:<a href="#section-6-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6-4.1">A GS2 header consisting of a flag indicating channel binding support and usage, and an optional SASL authorization identity.<a href="#section-6-4.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-4.2">The authentication ID (AuthID) of the user.<a href="#section-6-4.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-4.3">OPAQUE KE1, containing the OPRF credential request, a nonce, and an ephemeral public key.<a href="#section-6-4.3" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-6-5">In response the server sends the "server-message" containing:<a href="#section-6-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6-6.1">An encoding of requested channel binding data<a href="#section-6-6.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-6.2">Parameters for the KSF that needs to be used by the client<a href="#section-6-6.2" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-6.3">OPAQUE KE2, containing the OPRF credential response, a nonce, and an ephemeral public key.<a href="#section-6-6.3" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-6-6.4">A MAC proving the integrity of the exchange so far and cryptographically authenticating the server to the client (also contained in KE2)<a href="#section-6-6.4" class="pilcrow">¶</a>
+</li>
+      </ul>
+<p id="section-6-7">The client then recovers a client-only export key and a shared secret specific to this session from the OPRF response using the defined KSF with the user-provided password and parameters sent by the server.<a href="#section-6-7" class="pilcrow">¶</a></p>
+<p id="section-6-8">To finalize the authentication a client sends a "client-final-message" containing itself a MAC over the exchange (in KE3), thus cryptographically authenticating the client to the server.<a href="#section-6-8" class="pilcrow">¶</a></p>
+<div id="opaque-attributes">
+<section id="section-6.1">
+        <h3 id="name-opaque-attributes">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-opaque-attributes" class="section-name selfRef">OPAQUE Attributes</a>
+        </h3>
+<p id="section-6.1-1">This section details all attributes permissible in messages, their use and their value format. All Attribute keys are a single US-ASCII letter and case-sensitive. The selection of letters used for attribute keys is based on SCRAM <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>]</span> to make it easier to adapt extensions defined for SCRAM to this mechanism.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-2">The order of attributes is fixed for all messages, except for extension attributes which are limited to designated positions but may appear in any order. Implementations <span class="bcp14">MUST NOT</span> assume a specific ordering of extensions.<a href="#section-6.1-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-6.1-3.1">a: This is an optional attribute and is part of the GS2 <span>[<a href="#RFC5801" class="cite xref">RFC5801</a>]</span> bridge between GSS-API and SASL. Its specification and usage is the same as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>.<a href="#section-6.1-3.1" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.2">n: This attribute specifies the name of the user whose password is used for authentication (aka "authentication identity" <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>]</span>). Its encoding, preparation, and usage is the same as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>.<a href="#section-6.1-3.2" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.3">m: This attribute is reserved for future extensibility. In this version of OPAQUE its presence in a client or server message <span class="bcp14">MUST</span> cause authentication failure when the attribute is parsed by the other end.<a href="#section-6.1-3.3" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.4">r: This attribute specifies a base64-encoded serialization of the KE1 message as specified by <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span>.<a href="#section-6.1-3.4" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.5">c: This <span class="bcp14">REQUIRED</span> attribute specifies the base64-encoded GS2 header and channel binding data. Its specification is the same as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-5.1" class="relref">Section 5.1</a></span>, however it is sent by the server to the client instead of the other way around as in SCRAM.<a href="#section-6.1-3.5" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.6">i: This attribute specifies base64-encoded parameters for the KSF to be used. The format of the parameters is specific in Section <a href="#ksf-parameter-encoding" class="auto internal xref">6.1.1</a>.<a href="#section-6.1-3.6" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.7">v: This attribute specifies a base64-encoded serialization of the KE2 message as specified by <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span>.<a href="#section-6.1-3.7" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.8">p: This attribute specifies a base64-encoded serialization of the KE3 message as specified by <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span>.<a href="#section-6.1-3.8" class="pilcrow">¶</a>
+</li>
+          <li class="normal" id="section-6.1-3.9">Further as of now unspecified mandatory and optional extensions. Mandatory extensions are encoded using the "m" attribute, optional attributes may use any unassigned attribute name. Unknown optional attributes <span class="bcp14">MUST</span> be ignored upon receipt.<a href="#section-6.1-3.9" class="pilcrow">¶</a>
+</li>
+        </ul>
+<div id="ksf-parameter-encoding">
+<section id="section-6.1.1">
+          <h4 id="name-ksf-parameter-encoding">
+<a href="#section-6.1.1" class="section-number selfRef">6.1.1. </a><a href="#name-ksf-parameter-encoding" class="section-name selfRef">KSF parameter encoding</a>
+          </h4>
+<p id="section-6.1.1-1">The Argon2id <span>[<a href="#RFC9106" class="cite xref">RFC9106</a>]</span> algorithm as used by OPAQUE-A255SHA requires the three parameters t, p, and m to be additionally transferred from server to client for an authentication exchange. The values for these parameters are fixed at registration time, but may be different for each user.<a href="#section-6.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-2"><span class="cref" id="_1">Note: Argon2 may get a PKCS#5 parameter encoding, e.g. <span><a href="https://github.com/P-H-C/phc-winner-argon2/issues/348">https://github.com/P-H-C/phc-winner-argon2/issues/348</a></span> ; should we wait on that or specify our own format?<span class="crefSource">Nadja</span></span><a href="#section-6.1.1-2" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-3">The limits and interpretation of the parameters set in <span>[<a href="#RFC9106" class="cite xref">RFC9106</a>]</span> apply. Parameters are encoded as a sequence of ASCII key-value pairs separated by ASCII commas. The key and value in each pair are separated by a single ASCII equals sign ('='). The keys for the parameters are the single letter identifiers assigned by <span>[<a href="#RFC9106" class="cite xref">RFC9106</a>]</span>, the values are encoded as decimal numbers with no digit delimiters or separators.<a href="#section-6.1.1-3" class="pilcrow">¶</a></p>
+<p id="section-6.1.1-4">Example of the encoding of the parameters number of passes = 1, degree of parallelism = 4 and memory size = 2 GiB (i.e. 2^21 KiB) using the above rules:<a href="#section-6.1.1-4" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-6.1.1-5">
+<pre>
+m=2097152,t=1,p=4
+</pre><a href="#section-6.1.1-5" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="sasl-mechanism-requirements">
+<section id="section-6.2">
+        <h3 id="name-sasl-mechanism-requirements">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-sasl-mechanism-requirements" class="section-name selfRef">SASL Mechanism Requirements</a>
+        </h3>
+<p id="section-6.2-1">This section describes the required information for SASL mechanisms as laid out in <span>[<a href="#RFC4422" class="cite xref">RFC4422</a>], <a href="https://rfc-editor.org/rfc/rfc4422#section-5" class="relref">Section 5</a></span>.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">1) "OPAQUE-A255SHA" and "OPAQUE-A255SHA-PLUS"<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">2a) OPAQUE is a client-first mechanism<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<p id="section-6.2-4">2b) OPAQUE does not send any additional data to indicate a successful outcome. All authentication exchanges take 3 messages regardless of success.<a href="#section-6.2-4" class="pilcrow">¶</a></p>
+<p id="section-6.2-5">3) OPAQUE can transfer authorization identities from the client to the server.<a href="#section-6.2-5" class="pilcrow">¶</a></p>
+<p id="section-6.2-6">4) OPAQUE does not offer security layers but allows channel binding.<a href="#section-6.2-6" class="pilcrow">¶</a></p>
+<p id="section-6.2-7">5) OPAQUE uses a MAC to protect the integrity of the entire authentication exchange including the authzid.<a href="#section-6.2-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="channel-binding">
+<section id="section-7">
+      <h2 id="name-channel-binding">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-channel-binding" class="section-name selfRef">Channel Binding</a>
+      </h2>
+<p id="section-7-1">OPAQUE supports binding the authentication to an underlying secure transport. Support for channel binding is optional, therefore the usage of channel binding is negotiable.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">The negotiation of channel binding is performed as defined in <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-6" class="relref">Section 6</a></span> with the following differences:<a href="#section-7-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-7-3.1">The non-PLUS and PLUS variants of the mechanism are instead named OPAQUE-&lt;variant&gt; and OPAQUE-&lt;variant&gt;-PLUS respectively.<a href="#section-7-3.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-7-3.2">As it is the server who sends the channel binding data the client is responsible to verify this data by constructing the expected value of the "c=" attribute and comparing it to the received one. This comparison <span class="bcp14">SHOULD</span> be implemented to be constant-time.<a href="#section-7-3.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+<div id="default-channel-binding">
+<section id="section-7.1">
+        <h3 id="name-default-channel-binding">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-default-channel-binding" class="section-name selfRef">Default Channel Binding</a>
+        </h3>
+<p id="section-7.1-1">'tls-exporter' is the default channel binding type for any application that do not specify one.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
+<p id="section-7.1-2">Servers <span class="bcp14">MUST</span> implement the 'tls-exporter' <span>[<a href="#RFC9266" class="cite xref">RFC9266</a>]</span> channel binding type if they implement any channel binding and make use of TLS-1.3 <span>[<a href="#RFC8446" class="cite xref">RFC8446</a>]</span>. Clients <span class="bcp14">SHOULD</span> implement the 'tls-exporter' <span>[<a href="#RFC9266" class="cite xref">RFC9266</a>]</span> channel binding type if they implement any channel binding and make use of TLS-1.3.<a href="#section-7.1-2" class="pilcrow">¶</a></p>
+<p id="section-7.1-3">Server and clients <span class="bcp14">SHOULD</span> implement the 'tls-unique' <span>[<a href="#RFC5929" class="cite xref">RFC5929</a>]</span> channel binding if they implement channel binding and make use of TLS-1.2. If a server or client implements 'tls-unique' they <span class="bcp14">MUST</span> ensure appropriate protection from the <span>[<a href="#TripleHandshake" class="cite xref">TripleHandshake</a>]</span> vulnerability using e.g. the Extended Master Secret Extension <span>[<a href="#RFC7627" class="cite xref">RFC7627</a>]</span>.<a href="#section-7.1-3" class="pilcrow">¶</a></p>
+<p id="section-7.1-4">Servers <span class="bcp14">MUST</span> use the channel binding type indicated by the client, or fail authentication if they do not support it.<a href="#section-7.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="formal-syntax">
+<section id="section-8">
+      <h2 id="name-formal-syntax">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-formal-syntax" class="section-name selfRef">Formal Syntax</a>
+      </h2>
+<p id="section-8-1">The following syntax specification is written in Augmented Backus-Naur Form (ABNF) notation as specified in <span>[<a href="#RFC5234" class="cite xref">RFC5234</a>]</span>. The non-terminals "UTF8-2", "UTF8-3" and "UTF8-4" are defined in <span>[<a href="#RFC3629" class="cite xref">RFC3629</a>]</span>.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">The syntax is based in large parts on <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>], <a href="https://rfc-editor.org/rfc/rfc5802#section-7" class="relref">Section 7</a></span>, which may be referenced for clarification. If this specification and <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>]</span> are in conflict, this specification takes priority.<a href="#section-8-2" class="pilcrow">¶</a></p>
+<p id="section-8-3">Used definitions from <span>[<a href="#RFC5802" class="cite xref">RFC5802</a>]</span> are reproduced here for convenience:<a href="#section-8-3" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8-4">
+<pre>
+ALPHA = &lt;as defined in RFC 5234 appendix B.1&gt;
+DIGIT = &lt;as defined in RFC 5234 appendix B.1&gt;
+UTF8-2 = &lt;as defined in RFC 3629 (STD 63)&gt;
+UTF8-3 = &lt;as defined in RFC 3629 (STD 63)&gt;
+UTF8-4 = &lt;as defined in RFC 3629 (STD 63)&gt;
+
+attr-val        = ALPHA "=" value
+                 ;; Generic syntax of any attribute sent
+                 ;; by server or client
+
+value           = 1*value-char
+
+value-safe-char = %x01-2B / %x2D-3C / %x3E-7F /
+                 UTF8-2 / UTF8-3 / UTF8-4
+                 ;; UTF8-char except NUL, "=", and ",".
+
+value-char      = value-safe-char / "="
+
+printable       = %x21-2B / %x2D-7E
+                 ;; Printable ASCII except ",".
+                 ;; Note that any "printable" is also
+                 ;; a valid "value".
+
+base64-char     = ALPHA / DIGIT / "/" / "+"
+
+base64-4        = 4base64-char
+
+base64-3        = 3base64-char "="
+
+base64-2        = 2base64-char "=="
+
+base64          = *base64-4 [base64-3 / base64-2]
+
+posit-number    = %x31-39 *DIGIT
+                 ;; A positive number.
+
+saslname        = 1*(value-safe-char / "=2C" / "=3D")
+                 ;; Conforms to &lt;value&gt;.
+
+authzid         = "a=" saslname
+                 ;; Protocol specific.
+
+cb-name         = 1*(ALPHA / DIGIT / "." / "-")
+                  ;; See RFC 5056, Section 7.
+                  ;; E.g., "tls-server-end-point" or
+                  ;; "tls-unique".
+
+gs2-cbind-flag  = ("p=" cb-name) / "n" / "y"
+                  ;; "n" -&gt; client doesn't support channel binding.
+                  ;; "y" -&gt; client does support channel binding
+                  ;;        but thinks the server does not.
+                  ;; "p" -&gt; client requires channel binding.
+                  ;; The selected channel binding follows "p=".
+
+gs2-header      = gs2-cbind-flag "," [ authzid ] ","
+                  ;; GS2 header for OPAQUE
+
+username        = "n=" saslname
+                  ;; Usernames are prepared using SASLprep.
+
+reserved-mext   = "m=" 1*(value-char)
+                  ;; Reserved for signaling mandatory extensions.
+                  ;; The exact syntax will be defined in
+                  ;; the future.
+
+channel-binding = "c=" base64
+                  ;; base64 encoding of cbind-input.
+
+cbind-data      = 1*OCTET
+
+cbind-input     = gs2-header [ cbind-data ]
+                  ;; cbind-data MUST be present for
+                  ;; gs2-cbind-flag of "p" and MUST be absent
+                  ;; for "y" or "n".
+</pre><a href="#section-8-4" class="pilcrow">¶</a>
+</div>
+<p id="section-8-5">The following definitions are specific to OPAQUE:<a href="#section-8-5" class="pilcrow">¶</a></p>
+<div class="alignLeft art-text artwork" id="section-8-6">
+<pre>
+ke1             = "r=" base64
+                  ;; base64 encoding of the OPAQUE KE1 message struct
+ke2             = "v=" base64
+                  ;; base64 encoding of the OPAQUE KE2 message struct
+ke3             = "p=" base64
+                  ;; base64 encoding of the OPAQUE KE3 message struct
+
+ksf-params      = "i=" base64
+                  ;; base64 encoding of KSF parameters
+
+client-first-message-bare =
+            [reserved-mext ","] username "," ke1 ["," extensions]
+
+client-first-message =
+            gs2-header client-first-message-bare
+
+server-message-bare =
+            [reserved-mext ","] channel-binding "," ksf-params
+            ["," extensions]
+
+server-message  = server-message-bare "," ke2
+
+client-final-message = ke3
+</pre><a href="#section-8-6" class="pilcrow">¶</a>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-9">
+      <h2 id="name-security-considerations">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-9-1">The KSF parameters and channel bindings aren't authenticated before KSF usage, allowing a DoS of a client by an malicious actor posing as the server, as it can send excessively expensive KSF parameters.<a href="#section-9-1" class="pilcrow">¶</a></p>
+<p id="section-9-2">If not used with a secure channel providing confidentiality this mechanism leaks the authid and authzid of an authenticating user to any passive observer.<a href="#section-9-2" class="pilcrow">¶</a></p>
+<p id="section-9-3">The cryptographic security of this mechanism is not increased over the one provided by the underlying OPAQUE protocol, so all security considerations listed in the <span>[<a href="#OPAQUE" class="cite xref">OPAQUE</a>]</span> specification also apply to this one.<a href="#section-9-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="open-issues">
+<section id="section-10">
+      <h2 id="name-open-issues">
+<a href="#section-10" class="section-number selfRef">10. </a><a href="#name-open-issues" class="section-name selfRef">Open Issues</a>
+      </h2>
+<ul class="normal">
+<li class="normal" id="section-10-1.1">With the current design the KSF parameters can not be MAC-verified until after they have been used. This is bad. The only other option is using the ephemeral keypair to generate a MAC key and use that. This may impact security.<a href="#section-10-1.1" class="pilcrow">¶</a>
+</li>
+        <li class="normal" id="section-10-1.2">This mechanism should be extended to also become a GSS-API mechanism like SCRAM is.<a href="#section-10-1.2" class="pilcrow">¶</a>
+</li>
+      </ul>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-11">
+      <h2 id="name-iana-considerations">
+<a href="#section-11" class="section-number selfRef">11. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-11-1">A future revision of this document will request a new registry for the OPAQUE family of SASL mechanism, outlining all required details on the primitives used by the 'OPAQUE-A255SHA' variant.<a href="#section-11-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<section id="section-12">
+      <h2 id="name-references">
+<a href="#section-12" class="section-number selfRef">12. </a><a href="#name-references" class="section-name selfRef">References</a>
+      </h2>
+<section id="section-12.1">
+        <h3 id="name-normative-references">
+<a href="#section-12.1" class="section-number selfRef">12.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
+<dl class="references">
+<dt id="I-D.irtf-cfrg-voprf-17">[I-D.irtf-cfrg-voprf-17]</dt>
+        <dd>
+<span class="refAuthor">Davidson, A.</span>, <span class="refAuthor">Faz-Hernandez, A.</span>, <span class="refAuthor">Sullivan, N.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"Oblivious Pseudorandom Functions (OPRFs) using Prime-Order Groups"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-irtf-cfrg-voprf-17</span>, <time datetime="2023-01-09" class="refDate">9 January 2023</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-voprf-17">https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-voprf-17</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="OPAQUE">[OPAQUE]</dt>
+        <dd>
+<span class="refAuthor">Bourdrez, D.</span>, <span class="refAuthor">Krawczyk, H.</span>, <span class="refAuthor">Lewi, K.</span>, and <span class="refAuthor">C. A. Wood</span>, <span class="refTitle">"The OPAQUE Asymmetric PAKE Protocol"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">I-D draft-irtf-cfrg-opaque-latest</span>, <time datetime="2023-01-12" class="refDate">12 January 2023</time>, <span>&lt;<a href="https://github.com/cfrg/draft-irtf-cfrg-opaque">https://github.com/cfrg/draft-irtf-cfrg-opaque</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2104">[RFC2104]</dt>
+        <dd>
+<span class="refAuthor">Krawczyk, H.</span>, <span class="refAuthor">Bellare, M.</span>, and <span class="refAuthor">R. Canetti</span>, <span class="refTitle">"HMAC: Keyed-Hashing for Message Authentication"</span>, <span class="seriesInfo">RFC 2104</span>, <span class="seriesInfo">DOI 10.17487/RFC2104</span>, <time datetime="1997-02" class="refDate">February 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2104">https://www.rfc-editor.org/rfc/rfc2104</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC2119">[RFC2119]</dt>
+        <dd>
+<span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3629">[RFC3629]</dt>
+        <dd>
+<span class="refAuthor">Yergeau, F.</span>, <span class="refTitle">"UTF-8, a transformation format of ISO 10646"</span>, <span class="seriesInfo">STD 63</span>, <span class="seriesInfo">RFC 3629</span>, <span class="seriesInfo">DOI 10.17487/RFC3629</span>, <time datetime="2003-11" class="refDate">November 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3629">https://www.rfc-editor.org/rfc/rfc3629</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4422">[RFC4422]</dt>
+        <dd>
+<span class="refAuthor">Melnikov, A., Ed.</span> and <span class="refAuthor">K. Zeilenga, Ed.</span>, <span class="refTitle">"Simple Authentication and Security Layer (SASL)"</span>, <span class="seriesInfo">RFC 4422</span>, <span class="seriesInfo">DOI 10.17487/RFC4422</span>, <time datetime="2006-06" class="refDate">June 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4422">https://www.rfc-editor.org/rfc/rfc4422</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5234">[RFC5234]</dt>
+        <dd>
+<span class="refAuthor">Crocker, D., Ed.</span> and <span class="refAuthor">P. Overell</span>, <span class="refTitle">"Augmented BNF for Syntax Specifications: ABNF"</span>, <span class="seriesInfo">STD 68</span>, <span class="seriesInfo">RFC 5234</span>, <span class="seriesInfo">DOI 10.17487/RFC5234</span>, <time datetime="2008-01" class="refDate">January 2008</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5234">https://www.rfc-editor.org/rfc/rfc5234</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5801">[RFC5801]</dt>
+        <dd>
+<span class="refAuthor">Josefsson, S.</span> and <span class="refAuthor">N. Williams</span>, <span class="refTitle">"Using Generic Security Service Application Program Interface (GSS-API) Mechanisms in Simple Authentication and Security Layer (SASL): The GS2 Mechanism Family"</span>, <span class="seriesInfo">RFC 5801</span>, <span class="seriesInfo">DOI 10.17487/RFC5801</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5801">https://www.rfc-editor.org/rfc/rfc5801</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5802">[RFC5802]</dt>
+        <dd>
+<span class="refAuthor">Newman, C.</span>, <span class="refAuthor">Menon-Sen, A.</span>, <span class="refAuthor">Melnikov, A.</span>, and <span class="refAuthor">N. Williams</span>, <span class="refTitle">"Salted Challenge Response Authentication Mechanism (SCRAM) SASL and GSS-API Mechanisms"</span>, <span class="seriesInfo">RFC 5802</span>, <span class="seriesInfo">DOI 10.17487/RFC5802</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5802">https://www.rfc-editor.org/rfc/rfc5802</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5869">[RFC5869]</dt>
+        <dd>
+<span class="refAuthor">Krawczyk, H.</span> and <span class="refAuthor">P. Eronen</span>, <span class="refTitle">"HMAC-based Extract-and-Expand Key Derivation Function (HKDF)"</span>, <span class="seriesInfo">RFC 5869</span>, <span class="seriesInfo">DOI 10.17487/RFC5869</span>, <time datetime="2010-05" class="refDate">May 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5869">https://www.rfc-editor.org/rfc/rfc5869</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC5929">[RFC5929]</dt>
+        <dd>
+<span class="refAuthor">Altman, J.</span>, <span class="refAuthor">Williams, N.</span>, and <span class="refAuthor">L. Zhu</span>, <span class="refTitle">"Channel Bindings for TLS"</span>, <span class="seriesInfo">RFC 5929</span>, <span class="seriesInfo">DOI 10.17487/RFC5929</span>, <time datetime="2010-07" class="refDate">July 2010</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc5929">https://www.rfc-editor.org/rfc/rfc5929</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7627">[RFC7627]</dt>
+        <dd>
+<span class="refAuthor">Bhargavan, K., Ed.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, <span class="refAuthor">Pironti, A.</span>, <span class="refAuthor">Langley, A.</span>, and <span class="refAuthor">M. Ray</span>, <span class="refTitle">"Transport Layer Security (TLS) Session Hash and Extended Master Secret Extension"</span>, <span class="seriesInfo">RFC 7627</span>, <span class="seriesInfo">DOI 10.17487/RFC7627</span>, <time datetime="2015-09" class="refDate">September 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7627">https://www.rfc-editor.org/rfc/rfc7627</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8174">[RFC8174]</dt>
+        <dd>
+<span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8446">[RFC8446]</dt>
+        <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 8446</span>, <span class="seriesInfo">DOI 10.17487/RFC8446</span>, <time datetime="2018-08" class="refDate">August 2018</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8446">https://www.rfc-editor.org/rfc/rfc8446</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9106">[RFC9106]</dt>
+        <dd>
+<span class="refAuthor">Biryukov, A.</span>, <span class="refAuthor">Dinu, D.</span>, <span class="refAuthor">Khovratovich, D.</span>, and <span class="refAuthor">S. Josefsson</span>, <span class="refTitle">"Argon2 Memory-Hard Function for Password Hashing and Proof-of-Work Applications"</span>, <span class="seriesInfo">RFC 9106</span>, <span class="seriesInfo">DOI 10.17487/RFC9106</span>, <time datetime="2021-09" class="refDate">September 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9106">https://www.rfc-editor.org/rfc/rfc9106</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9266">[RFC9266]</dt>
+      <dd>
+<span class="refAuthor">Whited, S.</span>, <span class="refTitle">"Channel Bindings for TLS 1.3"</span>, <span class="seriesInfo">RFC 9266</span>, <span class="seriesInfo">DOI 10.17487/RFC9266</span>, <time datetime="2022-07" class="refDate">July 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9266">https://www.rfc-editor.org/rfc/rfc9266</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+<section id="section-12.2">
+        <h3 id="name-informative-references">
+<a href="#section-12.2" class="section-number selfRef">12.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="TripleHandshake">[TripleHandshake]</dt>
+      <dd>
+<span class="refAuthor">Bhargavan, K.</span>, <span class="refAuthor">Delignat-Lavaud, A.</span>, <span class="refAuthor">Fournet, C.</span>, <span class="refAuthor">Pironti, A.</span>, and <span class="refAuthor">P. Strub</span>, <span class="refTitle">"Triple Handshakes and Cookie Cutters: Breaking and Fixing Authentication over TLS"</span>, <span class="refContent">miTLS</span>, <time datetime="2014-05" class="refDate">May 2014</time>, <span>&lt;<a href="https://www.mitls.org/pages/attacks/3SHAKE">https://www.mitls.org/pages/attacks/3SHAKE</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</section>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">Thank you to Daniel Bourdrez, Hugo Krawczyk, Kevin Lewi, and C. A. Wood for their work on the OPAQUE PAKE that this mechanism is based on.
+Thank you to Abhijit Menon-Sen, Alexey Melnikov, Nicolas Williams, and Chris Newman for their work on the SCRAM RFC, most of which this draft oh so blatanly steals for its own gain.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Nadja von Reitzenstein Čerpnjak</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:me@dequbed.space" class="email">me@dequbed.space</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
