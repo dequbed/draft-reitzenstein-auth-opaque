@@ -3,9 +3,9 @@
 
 
 WG Working Group                            N. von Reitzenstein Čerpnjak
-Internet-Draft                                           16 January 2023
+Internet-Draft                                           17 January 2023
 Intended status: Informational                                          
-Expires: 20 July 2023
+Expires: 21 July 2023
 
 
 A SASL and GSS-API Mechanism using the asymmetric password-authenticated
@@ -57,7 +57,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 20 July 2023.
+   This Internet-Draft will expire on 21 July 2023.
 
 Copyright Notice
 
@@ -83,13 +83,14 @@ Table of Contents
      6.2.  SASL Mechanism Requirements
    7.  Channel Binding
      7.1.  Default Channel Binding
-   8.  Formal Syntax
-   9.  Security Considerations
-   10. Open Issues
-   11. IANA Considerations
-   12. References
-     12.1.  Normative References
-     12.2.  Informative References
+   8.  OPAQUE Registration Messages
+   9.  Formal Syntax
+   10. Security Considerations
+   11. Open Issues
+   12. IANA Considerations
+   13. References
+     13.1.  Normative References
+     13.2.  Informative References
    Acknowledgments
    Author's Address
 
@@ -412,7 +413,32 @@ Table of Contents
    Servers MUST use the channel binding type indicated by the client, or
    fail authentication if they do not support it.
 
-8.  Formal Syntax
+8.  OPAQUE Registration Messages
+
+   [OPAQUE] Section 3.2 defines a sub-protocol to create a credentials
+   record on the client without having to disclose the password to the
+   server or the server having to disclose private keys to the client.
+   Implementations of this specification SHOULD use said protocol to
+   register or change credentials on a server.
+
+   The sub-protocol consists of the client requesting registration using
+   a RegistrationRequest message, the server generating and then
+   returning a RegistrationResponse using data contained in the request,
+   and finally the client sending a RegistrationRecord to the server to
+   be stored.
+
+   All messages in this subprotocol MUST be transported using an
+   authenticated confidential channel.
+   // TODO: 'authenticated' means what exactly?
+   //
+   // -- Nadja
+
+   The encodings specified in Section 9 for the above messages are
+   RECOMMENDED for implementations and protocols where registration,
+   credentials updating, and similar functionality can be provided
+   inline.
+
+9.  Formal Syntax
 
    The following syntax specification is written in Augmented Backus-
    Naur Form (ABNF) notation as specified in [RFC5234].  The non-
@@ -525,7 +551,10 @@ Table of Contents
 
    client-final-message = ke3
 
-9.  Security Considerations
+
+   // TODO: Define registration message encoding
+
+10.  Security Considerations
 
    The KSF parameters and channel bindings aren't authenticated before
    KSF usage, allowing a DoS of a client by an malicious actor posing as
@@ -540,7 +569,27 @@ Table of Contents
    considerations listed in the [OPAQUE] specification also apply to
    this one.
 
-10.  Open Issues
+   The registration messages specified in Section 8 are required to be
+   transported over an authenticated confidential channel as an attacker
+   with access to their plaintext content can severely weaken the
+   authentication protocol and perform offline guessing attacks on the
+   client's credentials.
+
+
+   // TODO: The KSF parameters can be controlled (and set to 0) by an
+   // attacker, detail how that (doesn't) affect security.
+   //
+   // -- Nadja
+
+
+   // This can't _possibly_ have _all_ the security problems of OPAQUE
+   // itself?  Which ones are excluded by choices made, how does
+   // specifically using OPAQUE-3DH add potential security issues that
+   // are solved by "don't use 3DH"?
+   //
+   // -- Nadja
+
+11.  Open Issues
 
    *  With the current design the KSF parameters can not be MAC-verified
       until after they have been used.  This is bad.  The only other
@@ -550,15 +599,15 @@ Table of Contents
    *  This mechanism should be extended to also become a GSS-API
       mechanism like SCRAM is.
 
-11.  IANA Considerations
+12.  IANA Considerations
 
    A future revision of this document will request a new registry for
    the OPAQUE family of SASL mechanism, outlining all required details
    on the primitives used by the 'OPAQUE-A255SHA' variant.
 
-12.  References
+13.  References
 
-12.1.  Normative References
+13.1.  Normative References
 
    [I-D.irtf-cfrg-voprf-17]
               Davidson, A., Faz-Hernandez, A., Sullivan, N., and C. A.
@@ -642,7 +691,7 @@ Table of Contents
               DOI 10.17487/RFC9266, July 2022,
               <https://www.rfc-editor.org/rfc/rfc9266>.
 
-12.2.  Informative References
+13.2.  Informative References
 
    [TripleHandshake]
               Bhargavan, K., Delignat-Lavaud, A., Fournet, C., Pironti,
@@ -656,7 +705,10 @@ Acknowledgments
    Wood for their work on the OPAQUE PAKE that this mechanism is based
    on.  Thank you to Abhijit Menon-Sen, Alexey Melnikov, Nicolas
    Williams, and Chris Newman for their work on the SCRAM RFC, most of
-   which this draft oh so blatanly steals for its own gain.
+   which this draft oh so blatanly steals for its own gain.  Thank you
+   to the KITTEN WG mailing list members, and especially Dave Cridland,
+   Simon Josefsson, Rick van Rein, Stefan Marsiske for their helpful
+   feedback on this specification.
 
 Author's Address
 
