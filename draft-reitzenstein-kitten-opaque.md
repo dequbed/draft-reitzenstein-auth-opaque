@@ -271,6 +271,19 @@ Server and clients SHOULD implement the 'tls-unique' {{!RFC5929}} channel bindin
 
 Servers MUST use the channel binding type indicated by the client, or fail authentication if they do not support it.
 
+# OPAQUE Registration Messages
+
+{{OPAQUE}} Section 3.2 defines a sub-protocol to create a credentials record on the client without having to disclose the password to the server or the server having to disclose private keys to the client. Implementations of this specification SHOULD use said protocol to register or change credentials on a server.
+
+The sub-protocol consists of the client requesting registration using a `RegistrationRequest` message, the server generating and then returning a `RegistrationResponse` using data contained in the request, and finally the client sending a `RegistrationRecord` to the server to be stored.
+
+All messages in this subprotocol MUST be transported using an authenticated confidential channel.[^3]
+
+The encodings specified in Section {{<formal-syntax}} for the above messages are RECOMMENDED for implementations and protocols where registration, credentials updating, and similar functionality can be provided inline.
+
+[^3]: TODO: 'authenticated' means what exactly?
+{:nadja}
+
 # Formal Syntax
 
 The following syntax specification is written in Augmented Backus-Naur Form (ABNF) notation as specified in {{RFC5234}}. The non-terminals "UTF8-2", "UTF8-3" and "UTF8-4" are defined in {{RFC3629}}.
@@ -381,6 +394,10 @@ The following definitions are specific to OPAQUE:
 
     client-final-message = ke3
 
+[^5]
+
+[^5]: TODO: Define registration message encoding
+
 # Security Considerations
 
 The KSF parameters and channel bindings aren't authenticated before KSF usage, allowing a DoS of a client by an malicious actor posing as the server, as it can send excessively expensive KSF parameters.
@@ -388,6 +405,18 @@ The KSF parameters and channel bindings aren't authenticated before KSF usage, a
 If not used with a secure channel providing confidentiality this mechanism leaks the authid and authzid of an authenticating user to any passive observer.
 
 The cryptographic security of this mechanism is not increased over the one provided by the underlying OPAQUE protocol, so all security considerations listed in the {{OPAQUE}} specification also apply to this one.
+
+The registration messages specified in Section {{<opaque-registration-messages}} are required to be transported over an authenticated confidential channel as an attacker with access to their plaintext content can severely weaken the authentication protocol and perform offline guessing attacks on the client's credentials.
+
+[^2]
+
+[^4]
+
+[^2]: TODO: The KSF parameters can be controlled (and set to 0) by an attacker, detail how that (doesn't) affect security.
+{:nadja}
+
+[^4]: This can't *possibly* have *all* the security problems of OPAQUE itself? Which ones are excluded by choices made, how does specifically using OPAQUE-3DH add potential security issues that are solved by "don't use 3DH"?
+{:nadja}
 
 # Open Issues
 
@@ -406,5 +435,6 @@ A future revision of this document will request a new registry for the OPAQUE fa
 
 Thank you to Daniel Bourdrez, Hugo Krawczyk, Kevin Lewi, and C. A. Wood for their work on the OPAQUE PAKE that this mechanism is based on.
 Thank you to Abhijit Menon-Sen, Alexey Melnikov, Nicolás Williams, and Chris Newman for their work on the SCRAM RFC, most of which this draft oh so blatanly steals for its own gain.
+Thank you to the KITTEN WG mailing list members, and especially Dave Cridland, Simon Josefsson, Rick van Rein, Stefan Marsiske for their helpful feedback on this specification.
 
 {:nadja: source="Nadja"}
