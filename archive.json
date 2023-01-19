@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2023-01-17T00:37:43.831589+00:00",
+  "timestamp": "2023-01-19T00:39:10.832755+00:00",
   "repo": "dequbed/draft-reitzenstein-auth-opaque",
   "labels": [
     {
@@ -193,6 +193,65 @@
           "body": "The current solution has become to use the parts of the exchange requiring integrity protection in the client- and server_identity values.\r\n\r\nThis does however leaves the issue that the KSF parameters can neither directly nor indirectly be validated until after they have been used. This is a problem that may not be easily solveable given the current 3DH architecture.",
           "createdAt": "2022-10-06T17:36:38Z",
           "updatedAt": "2022-10-06T17:36:38Z"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOH68eks5blniX",
+      "title": "registration issue",
+      "url": "https://github.com/dequbed/draft-reitzenstein-auth-opaque/issues/3",
+      "state": "OPEN",
+      "author": "stef",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The OPAQUE RFC only specifies the 4 step password-privacy-protecting registration procedure, which does not apply to how SASL (and i assume also gss-api) creates new/registers users. With SASL new users are usually added on the server by using a tool like saslpasswd2 which creates the accounts for all SASL supported mechanisms, and thus the users password is exposed to the server. On one hand this violates one of OPAQUEs security guarantees, never exposing the password to the server, but on the other hand it enables the server to enforce password quality rules.",
+      "createdAt": "2023-01-17T15:33:25Z",
+      "updatedAt": "2023-01-17T20:09:28Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "dequbed",
+          "authorAssociation": "OWNER",
+          "body": "The SASL protocol does not concern itself with matter of registration and password changes. It's also not a new topic, SCRAM has the same issue. Registration/Password Changes has always been responsibility of the higher level protocol or server software.\r\n\r\nI would absolutely love the ability of safe registration in SASL, but sadly we don't have that at the moment. SASL2 as is proposed for use in XMPP has some ideas for solutions regarding that.\r\n\r\nIf something like SASL2 becomes a thing I'll glady add features regarding that to this specification or a new draft.",
+          "createdAt": "2023-01-17T18:08:09Z",
+          "updatedAt": "2023-01-17T18:08:09Z"
+        },
+        {
+          "author": "stef",
+          "authorAssociation": "NONE",
+          "body": "i think this deserves a mention in the security considerations at least",
+          "createdAt": "2023-01-17T18:31:18Z",
+          "updatedAt": "2023-01-17T18:31:18Z"
+        },
+        {
+          "author": "dequbed",
+          "authorAssociation": "OWNER",
+          "body": "> i think this deserves a mention in the security considerations at least\r\n\r\nThat's a fair point. I will add it to the security considerations.\r\n\r\nAdditionally after some further discussion with Thilo Molitor it's sensible to add a specified encoding for registration messages because he does have a XEP in the works that could make sensible use of this.",
+          "createdAt": "2023-01-17T18:54:03Z",
+          "updatedAt": "2023-01-17T18:54:03Z"
+        },
+        {
+          "author": "stef",
+          "authorAssociation": "NONE",
+          "body": "yay. \r\n\r\ni was also thinking, that OPAQUE as a protocol specifies both, registration and ake. if sasl only does the ake, is it still opaque? maybe it would be better to refer to a partial opaque protocol then.",
+          "createdAt": "2023-01-17T19:28:38Z",
+          "updatedAt": "2023-01-17T19:28:38Z"
+        },
+        {
+          "author": "dequbed",
+          "authorAssociation": "OWNER",
+          "body": "> i was also thinking, that OPAQUE as a protocol specifies both, registration and ake. if sasl only does the ake, is it still opaque? maybe it would be better to refer to a partial opaque protocol then.\r\n\r\nThe OPAQUE draft calls OPAQUE \"a secure asymmetric password-authenticated key exchange [protocol]\". My draft is titled \"A [\u2026] Mechanism using the asymmetric password-authenticated key agreement OPAQUE\" so no, the name is very much appropiate as the core feature of OPAQUE is the aPAKE, which is also the part that the mechanism is using.",
+          "createdAt": "2023-01-17T19:41:42Z",
+          "updatedAt": "2023-01-17T19:41:42Z"
+        },
+        {
+          "author": "stef",
+          "authorAssociation": "NONE",
+          "body": "the setup phase very much part of the protocol. but yeah, your title is more nuanced, but only for people reading very closely.",
+          "createdAt": "2023-01-17T20:09:28Z",
+          "updatedAt": "2023-01-17T20:09:28Z"
         }
       ]
     }
